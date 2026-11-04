@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { getAssetPath } from '@/lib/assets';
 
 const TOTAL_FRAMES = 36;
 const DEGREES_PER_FRAME = 360 / TOTAL_FRAMES; // 10 deg per frame
-const FRAME_PATH = '/assets/images/portrait-360/frame-';
+const FRAME_PATH = getAssetPath('/assets/images/portrait-360/frame-');
 const FRAME_EXT = '.png';
 
 const DRAG_SENSITIVITY = 0.52;
@@ -444,7 +445,7 @@ export default function Portrait360() {
         {/* Initial SSR Fallback Image — Exactly Matches Canvas 657x1008 Coordinates */}
         <img
           ref={fallbackImgRef}
-          src="/assets/images/saurav-cutout.png"
+          src={getAssetPath('/assets/images/saurav-cutout.png')}
           alt="Saurav Bhusal — Creative Web Developer and UI/UX Designer"
           className="portrait-fallback-img is-revealing absolute inset-0 w-full h-full object-contain pointer-events-none"
           id="portrait-static-img"
