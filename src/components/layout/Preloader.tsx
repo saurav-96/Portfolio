@@ -10,9 +10,23 @@ export default function Preloader() {
   const [shouldRender, setShouldRender] = useState(true);
 
   useEffect(() => {
+    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isSubsequentVisit = typeof window !== 'undefined' && sessionStorage.getItem('portfolio_visited') === 'true';
-    const targetDuration = isSubsequentVisit ? 220 : 450;
+    const targetDuration = prefersReducedMotion ? 50 : (isSubsequentVisit ? 180 : 380);
     const startTime = performance.now();
+
+    const triggerReady = () => {
+      if (typeof document !== 'undefined') {
+        document.documentElement.classList.add('page-ready');
+        document.body.classList.add('page-ready');
+      }
+      if (typeof window !== 'undefined' && (window as any).ScrollTrigger) {
+        (window as any).ScrollTrigger.refresh();
+      }
+    };
+
+    // Safety timeout to ensure page-ready is never blocked
+    const safetyTimer = setTimeout(triggerReady, 500);
 
     const interval = setInterval(() => {
       const elapsed = performance.now() - startTime;
@@ -27,18 +41,24 @@ export default function Preloader() {
         clearInterval(interval);
         setProgress(100);
         setStatus('Ready');
-        sessionStorage.setItem('portfolio_visited', 'true');
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.setItem('portfolio_visited', 'true');
+        }
 
         setTimeout(() => {
           setIsLoaded(true);
+          triggerReady();
           setTimeout(() => {
             setShouldRender(false);
-          }, 500);
-        }, 120);
+          }, 400);
+        }, 100);
       }
     }, 20);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(safetyTimer);
+    };
   }, []);
 
   if (!shouldRender) return null;
@@ -46,44 +66,33 @@ export default function Preloader() {
   return (
     <div
       id="site-preloader"
-      className={`site-preloader fixed inset-0 z-[999] flex flex-col items-center justify-center bg-obsidian transition-all duration-500 ease-out ${
-        isLoaded ? 'opacity-0 pointer-events-none -translate-y-6' : 'opacity-100'
-      }`}
-      role="progressbar"
-      aria-valuenow={progress}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-label="Loading portfolio"
+      className={`site-preloader ${isLoaded ? 'is-loaded' : ''}`}
+      aria-live="polite"
+      aria-atomic="true"
     >
-      <div className="flex flex-col items-center gap-6">
-        {/* Glowing Logo Monogram */}
-        <div className="relative w-16 h-16 rounded-2xl p-0.5 bg-gradient-to-br from-cyan-400 via-purple-500 to-indigo-600 animate-pulse shadow-[0_0_40px_rgba(168,85,247,0.5)]">
-          <div className="w-full h-full rounded-[14px] bg-obsidian flex items-center justify-center overflow-hidden">
-            <Image
-              src="/assets/images/saurav-logo.png"
-              alt="Saurav Bhusal Logo"
-              width={52}
-              height={52}
-              priority
-              className="w-full h-full object-cover"
-            />
-          </div>
+      <div className="preloader-core">
+        <div className="preloader-logo-ring">
+          <Image
+            src="/assets/images/saurav-logo.png"
+            alt="Saurav Logo"
+            className="w-10 h-10 rounded-full object-cover"
+            width={40}
+            height={40}
+            priority
+          />
         </div>
-
-        {/* Progress bar and counter */}
-        <div className="w-56 space-y-2">
-          <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden p-0.5">
-            <div
-              id="preloader-progress-bar"
-              className="h-full bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full transition-all duration-100 ease-out shadow-[0_0_12px_rgba(6,182,212,0.8)]"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          <div className="flex justify-between items-center text-[11px] font-mono text-slate-400">
-            <span id="preloader-status-text">{status}</span>
-            <span className="text-cyan-300 font-semibold">{progress}%</span>
-          </div>
+        <div className="preloader-brand-title font-heading">
+          SAURAV<span className="text-purpleNeon">.</span>
+        </div>
+        <div className="preloader-bar-wrap">
+          <div
+            id="preloader-progress-bar"
+            className="preloader-progress-bar"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <div id="preloader-status-text" className="preloader-status font-mono">
+          {status}
         </div>
       </div>
     </div>

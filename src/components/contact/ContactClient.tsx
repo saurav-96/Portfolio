@@ -1,26 +1,32 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useCallback, Suspense, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
   Mail,
-  MessageSquare,
-  Send,
-  CheckCircle2,
   AlertCircle,
-  Copy,
-  ExternalLink,
-  MapPin,
-  Clock
+  MapPin
 } from 'lucide-react';
 
-function ContactContent() {
+function SearchParamsReader({
+  onParams
+}: {
+  onParams: (service: string, project: string) => void;
+}) {
   const searchParams = useSearchParams();
-  const serviceParam = searchParams.get('service') || '';
-  const projectParam = searchParams.get('project') || '';
+  useEffect(() => {
+    const s = searchParams.get('service') || '';
+    const p = searchParams.get('project') || '';
+    if (s || p) {
+      onParams(s, p);
+    }
+  }, [searchParams, onParams]);
+  return null;
+}
 
+export default function ContactClient() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -34,17 +40,17 @@ function ContactContent() {
   const [submitted, setSubmitted] = useState(false);
   const [copiedBrief, setCopiedBrief] = useState(false);
 
-  useEffect(() => {
-    if (serviceParam) {
-      setFormData((prev) => ({ ...prev, projectType: serviceParam }));
+  const handleUrlParams = useCallback((service: string, project: string) => {
+    if (service) {
+      setFormData((prev) => ({ ...prev, projectType: service }));
     }
-    if (projectParam) {
+    if (project) {
       setFormData((prev) => ({
         ...prev,
-        message: prev.message || `Hi Saurav, I explored your "${projectParam}" project and would love to discuss a similar project.`
+        message: prev.message || `Hi Saurav, I explored your "${project}" project and would love to discuss a similar project.`
       }));
     }
-  }, [serviceParam, projectParam]);
+  }, []);
 
   const validate = () => {
     const errs: Record<string, string> = {};
@@ -61,7 +67,7 @@ function ContactContent() {
       errs.budget = 'Please select an estimated budget or scope.';
     }
     if (!formData.message.trim() || formData.message.trim().length < 10) {
-      errs.message = 'Please provide a message details (minimum 10 characters).';
+      errs.message = 'Please provide message details (minimum 10 characters).';
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -106,467 +112,465 @@ function ContactContent() {
   )}&body=${encodeURIComponent(getBriefText())}`;
 
   return (
-    <main id="main-content" className="pt-28 sm:pt-32 pb-20">
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+    <>
+      <Suspense fallback={null}>
+        <SearchParamsReader onParams={handleUrlParams} />
+      </Suspense>
 
-          {/* Left Column (5 Cols): Creator Identity, Direct Channels & Social Links */}
-          <div className="lg:col-span-5 space-y-6">
-            <div data-hero-reveal>
-              <span className="eyebrow-badge">
-                <span className="eyebrow-dot"></span>
-                <span>GET IN TOUCH</span>
-              </span>
-            </div>
+      <main id="main-content" className="pt-28 sm:pt-32 pb-20">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
 
-            <h1 data-hero-reveal className="font-heading text-4xl sm:text-5xl font-bold text-white leading-[1.12]">
-              Let&apos;s Connect &amp; <span className="text-gradient">Collaborate</span>
-            </h1>
-
-            <p data-hero-reveal className="text-slate-300 text-base sm:text-lg leading-relaxed">
-              Have a question, feedback, or a project in mind? I&apos;m just a message away. Reach out directly through social channels, direct messaging, or send a general inquiry using the form.
-            </p>
-
-            {/* Verified Creator Identity Card */}
-            <div data-hero-reveal className="glass-card p-4 sm:p-5 flex items-center gap-4" data-tilt>
-              <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-cyan-500/25 to-purple-600/30 border border-cyan-400/40 shrink-0">
-                <Image
-                  src="/assets/images/saurav-cutout.png"
-                  alt="Saurav Bhusal"
-                  fill
-                  className="object-cover object-top"
-                  sizes="80px"
-                  priority
-                />
+            {/* Left Column (5 Cols): Creator Identity, Direct Channels & Social Links */}
+            <div className="lg:col-span-5 space-y-6">
+              <div data-hero-reveal>
+                <span className="eyebrow-badge">
+                  <span className="eyebrow-dot"></span>
+                  <span>GET IN TOUCH</span>
+                </span>
               </div>
-              <div>
-                <div className="font-heading text-base font-bold text-white flex items-center gap-2">
-                  <span>Saurav Bhusal</span>
-                  <span className="status-badge status-live text-[10px] py-0.5 px-2">Remote Ready</span>
+
+              <h1 data-hero-reveal className="font-heading text-4xl sm:text-5xl font-bold text-white leading-[1.12]">
+                Let&apos;s Connect &amp; <span className="text-gradient">Collaborate</span>
+              </h1>
+
+              <p data-hero-reveal className="text-slate-300 text-base sm:text-lg leading-relaxed">
+                Have a question, feedback, or a project in mind? I&apos;m just a message away. Reach out directly through social channels, direct messaging, or send a general inquiry using the form.
+              </p>
+
+              {/* Verified Creator Identity Card */}
+              <div data-hero-reveal className="glass-card p-4 sm:p-5 flex items-center gap-4" data-tilt>
+                <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-cyan-500/25 to-purple-600/30 border border-cyan-400/40 shrink-0">
+                  <Image
+                    src="/assets/images/saurav-cutout.png"
+                    alt="Saurav Bhusal"
+                    fill
+                    className="object-cover object-top"
+                    sizes="80px"
+                    priority
+                  />
                 </div>
-                <div className="text-xs text-cyan-300 font-mono mt-0.5">Software &amp; Web Developer • UI/UX Designer</div>
-                <div className="text-[11px] text-slate-400 mt-1">Kapilvastu &amp; Butwal, Nepal • Available Worldwide</div>
-              </div>
-            </div>
-
-            {/* Direct Messaging & Verified Social Channels */}
-            <div data-hero-reveal className="glass-card p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="font-mono text-xs uppercase tracking-widest text-cyan-300">
-                  Direct Channels &amp; Social Profiles
-                </h2>
-                <span className="text-[11px] font-mono text-slate-400">Direct Links</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {/* WhatsApp Direct */}
-                <a
-                  href="https://wa.me/9779766271244"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-white/[0.03] hover:bg-emerald-500/15 border border-white/10 hover:border-emerald-500/40 flex items-center gap-3 transition group"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24zm4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.49-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.03 2.61c.13.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.23-.17-.48-.29z"/>
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-heading text-xs font-bold text-white group-hover:text-emerald-300 transition">WhatsApp</div>
-                    <div className="font-mono text-[10px] text-slate-400 truncate">+977 9766271244</div>
-                  </div>
-                </a>
-
-                {/* Telegram Direct */}
-                <a
-                  href="https://t.me/+9779766271244"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-white/[0.03] hover:bg-sky-500/15 border border-white/10 hover:border-sky-500/40 flex items-center gap-3 transition group"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-heading text-xs font-bold text-white group-hover:text-sky-300 transition">Telegram</div>
-                    <div className="font-mono text-[10px] text-slate-400 truncate">Direct Chat ↗</div>
-                  </div>
-                </a>
-
-                {/* Email Direct */}
-                <a
-                  href="mailto:sauravbhusal369@gmail.com"
-                  className="p-3 rounded-xl bg-white/[0.03] hover:bg-purple-500/15 border border-white/10 hover:border-purple-500/40 flex items-center gap-3 transition group"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                    <Mail className="w-5 h-5" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-heading text-xs font-bold text-white group-hover:text-purple-300 transition">Email</div>
-                    <div className="font-mono text-[10px] text-slate-400 truncate">sauravbhusal369@...</div>
-                  </div>
-                </a>
-
-                {/* LinkedIn */}
-                <a
-                  href="https://www.linkedin.com/in/saurav-b-502352415/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-white/[0.03] hover:bg-sky-500/15 border border-white/10 hover:border-sky-500/40 flex items-center gap-3 transition group"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-sky-500/20 text-[#0A66C2] flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-heading text-xs font-bold text-white group-hover:text-sky-300 transition">LinkedIn</div>
-                    <div className="font-mono text-[10px] text-slate-400 truncate">Connect ↗</div>
-                  </div>
-                </a>
-
-                {/* GitHub */}
-                <a
-                  href="https://github.com/saurav-96"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-white/[0.03] hover:bg-purple-500/15 border border-white/10 hover:border-purple-500/40 flex items-center gap-3 transition group"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-purple-500/20 text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                      <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-heading text-xs font-bold text-white group-hover:text-purple-300 transition">GitHub</div>
-                    <div className="font-mono text-[10px] text-slate-400 truncate">@saurav-96</div>
-                  </div>
-                </a>
-
-                {/* Instagram */}
-                <a
-                  href="https://www.instagram.com/sauravbhusal_96/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-white/[0.03] hover:bg-pink-500/15 border border-white/10 hover:border-pink-500/40 flex items-center gap-3 transition group"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-pink-500/20 text-[#E4405F] flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-heading text-xs font-bold text-white group-hover:text-pink-300 transition">Instagram</div>
-                    <div className="font-mono text-[10px] text-slate-400 truncate">@sauravbhusal_96</div>
-                  </div>
-                </a>
-
-                {/* Facebook */}
-                <a
-                  href="https://www.facebook.com/saurav.bhusal.148"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-white/[0.03] hover:bg-blue-500/15 border border-white/10 hover:border-blue-500/40 flex items-center gap-3 transition group"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-blue-500/20 text-[#1877F2] flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-heading text-xs font-bold text-white group-hover:text-blue-300 transition">Facebook</div>
-                    <div className="font-mono text-[10px] text-slate-400 truncate">Connect ↗</div>
-                  </div>
-                </a>
-
-                {/* X / Twitter */}
-                <a
-                  href="https://x.com/all_saurav"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-white/[0.03] hover:bg-cyan-500/15 border border-white/10 hover:border-cyan-500/40 flex items-center gap-3 transition group"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-cyan-500/20 text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-heading text-xs font-bold text-white group-hover:text-cyan-300 transition">X (Twitter)</div>
-                    <div className="font-mono text-[10px] text-slate-400 truncate">@all_saurav</div>
-                  </div>
-                </a>
-              </div>
-
-              {/* Location & Response Info */}
-              <div className="pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
-                <span className="inline-flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-cyan-400" />
-                  <span>Kapilvastu &amp; Butwal, Nepal</span>
-                </span>
-                <span className="font-mono text-[11px] text-emerald-300 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Typical reply: &lt; 24h
-                </span>
-              </div>
-            </div>
-
-            {/* Fast-Track Hire Me Callout Banner */}
-            <div data-hero-reveal className="p-4 rounded-2xl bg-gradient-to-r from-purple-900/30 via-midnight to-cyan-950/30 border border-purple-500/30 flex items-center justify-between gap-4">
-              <div>
-                <div className="font-heading text-sm font-bold text-white">Looking for fast-track hiring?</div>
-                <div className="text-xs text-slate-300 mt-0.5">Direct chat, milestone escrow contracts &amp; client onboarding.</div>
-              </div>
-              <Link href="/hire" className="btn-primary text-xs py-2 px-3.5 shrink-0" data-magnetic>
-                <span>Hire Me</span>
-                <span aria-hidden="true">→</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Column (7 Cols): High-Contrast Glassmorphic General Inquiry Form */}
-          <div className="lg:col-span-7" data-hero-reveal>
-            <div className="glass-card send-message-card p-6 sm:p-9">
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
                 <div>
-                  <h2 className="font-heading text-2xl font-bold text-white">Send a Message</h2>
-                  <p className="text-xs sm:text-sm text-slate-300 mt-1">
-                    Fill out the form below for general inquiries, questions, or project discussions.
-                  </p>
+                  <div className="font-heading text-base font-bold text-white flex items-center gap-2">
+                    <span>Saurav Bhusal</span>
+                    <span className="status-badge status-live text-[10px] py-0.5 px-2">Remote Ready</span>
+                  </div>
+                  <div className="text-xs text-cyan-300 font-mono mt-0.5">Software &amp; Web Developer • UI/UX Designer</div>
+                  <div className="text-[11px] text-slate-400 mt-1">Kapilvastu &amp; Butwal, Nepal • Available Worldwide</div>
                 </div>
-                <span className="tech-pill text-cyan-300 border-cyan-500/30">General Inquiry</span>
               </div>
 
-              <form onSubmit={handleSubmit} noValidate className="space-y-5">
-                {/* Accessible Error Summary */}
-                {Object.keys(errors).length > 0 && (
-                  <div
-                    className="form-error-summary"
-                    role="alert"
-                    tabIndex={-1}
-                    aria-labelledby="contact-error-summary-title"
+              {/* Direct Messaging & Verified Social Channels */}
+              <div data-hero-reveal className="glass-card p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-mono text-xs uppercase tracking-widest text-cyan-300">
+                    Direct Channels &amp; Social Profiles
+                  </h2>
+                  <span className="text-[11px] font-mono text-slate-400">Direct Links</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {/* WhatsApp Direct */}
+                  <a
+                    href="https://wa.me/9779766271244"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl bg-white/[0.03] hover:bg-emerald-500/15 border border-white/10 hover:border-emerald-500/40 flex items-center gap-3 transition group"
                   >
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-                      <h3 id="contact-error-summary-title" className="font-heading text-sm font-bold text-red-200">
-                        Please resolve the following before sending:
-                      </h3>
+                    <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24zm4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.49-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.03 2.61c.13.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.23-.17-.48-.29z"/>
+                      </svg>
                     </div>
-                    <ul className="list-disc pl-5 space-y-1 text-xs">
-                      {Object.values(errors).map((err, i) => (
-                        <li key={i}>{err}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                    <div className="min-w-0">
+                      <div className="font-heading text-xs font-bold text-white group-hover:text-emerald-300 transition">WhatsApp</div>
+                      <div className="font-mono text-[10px] text-slate-400 truncate">+977 9766271244</div>
+                    </div>
+                  </a>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {/* Full Name */}
-                  <div>
-                    <label htmlFor="contact-name" className="form-label">
-                      Full Name <span className="text-purple-400">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="contact-name"
-                      name="name"
-                      required
-                      autoComplete="name"
-                      placeholder="e.g., Alex Morgan"
-                      value={formData.name}
-                      onChange={(e) => {
-                        setFormData({ ...formData, name: e.target.value });
-                        if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
-                      }}
-                      className={`form-input ${errors.name ? 'input-error' : ''}`}
-                    />
-                    {errors.name && (
-                      <p className="field-error-msg visible" role="alert">
-                        {errors.name}
-                      </p>
-                    )}
-                  </div>
+                  {/* Telegram Direct */}
+                  <a
+                    href="https://t.me/+9779766271244"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl bg-white/[0.03] hover:bg-sky-500/15 border border-white/10 hover:border-sky-500/40 flex items-center gap-3 transition group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-heading text-xs font-bold text-white group-hover:text-sky-300 transition">Telegram</div>
+                      <div className="font-mono text-[10px] text-slate-400 truncate">Direct Chat ↗</div>
+                    </div>
+                  </a>
 
-                  {/* Email Address */}
-                  <div>
-                    <label htmlFor="contact-email" className="form-label">
-                      Email Address <span className="text-purple-400">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      id="contact-email"
-                      name="email"
-                      required
-                      autoComplete="email"
-                      placeholder="alex@company.com"
-                      value={formData.email}
-                      onChange={(e) => {
-                        setFormData({ ...formData, email: e.target.value });
-                        if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
-                      }}
-                      className={`form-input ${errors.email ? 'input-error' : ''}`}
-                    />
-                    {errors.email && (
-                      <p className="field-error-msg visible" role="alert">
-                        {errors.email}
-                      </p>
-                    )}
-                  </div>
+                  {/* Email Direct */}
+                  <a
+                    href="mailto:sauravbhusal369@gmail.com"
+                    className="p-3 rounded-xl bg-white/[0.03] hover:bg-purple-500/15 border border-white/10 hover:border-purple-500/40 flex items-center gap-3 transition group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-heading text-xs font-bold text-white group-hover:text-purple-300 transition">Email</div>
+                      <div className="font-mono text-[10px] text-slate-400 truncate">sauravbhusal369@...</div>
+                    </div>
+                  </a>
+
+                  {/* LinkedIn */}
+                  <a
+                    href="https://www.linkedin.com/in/saurav-b-502352415/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl bg-white/[0.03] hover:bg-sky-500/15 border border-white/10 hover:border-sky-500/40 flex items-center gap-3 transition group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-sky-500/20 text-[#0A66C2] flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-heading text-xs font-bold text-white group-hover:text-sky-300 transition">LinkedIn</div>
+                      <div className="font-mono text-[10px] text-slate-400 truncate">Connect ↗</div>
+                    </div>
+                  </a>
+
+                  {/* GitHub */}
+                  <a
+                    href="https://github.com/saurav-96"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl bg-white/[0.03] hover:bg-purple-500/15 border border-white/10 hover:border-purple-500/40 flex items-center gap-3 transition group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-purple-500/20 text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-heading text-xs font-bold text-white group-hover:text-purple-300 transition">GitHub</div>
+                      <div className="font-mono text-[10px] text-slate-400 truncate">@saurav-96</div>
+                    </div>
+                  </a>
+
+                  {/* Instagram */}
+                  <a
+                    href="https://www.instagram.com/sauravbhusal_96/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl bg-white/[0.03] hover:bg-pink-500/15 border border-white/10 hover:border-pink-500/40 flex items-center gap-3 transition group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-pink-500/20 text-[#E4405F] flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-heading text-xs font-bold text-white group-hover:text-pink-300 transition">Instagram</div>
+                      <div className="font-mono text-[10px] text-slate-400 truncate">@sauravbhusal_96</div>
+                    </div>
+                  </a>
+
+                  {/* Facebook */}
+                  <a
+                    href="https://www.facebook.com/saurav.bhusal.148"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl bg-white/[0.03] hover:bg-blue-500/15 border border-white/10 hover:border-blue-500/40 flex items-center gap-3 transition group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-blue-500/20 text-[#1877F2] flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-heading text-xs font-bold text-white group-hover:text-blue-300 transition">Facebook</div>
+                      <div className="font-mono text-[10px] text-slate-400 truncate">Connect ↗</div>
+                    </div>
+                  </a>
+
+                  {/* X / Twitter */}
+                  <a
+                    href="https://x.com/all_saurav"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-xl bg-white/[0.03] hover:bg-cyan-500/15 border border-white/10 hover:border-cyan-500/40 flex items-center gap-3 transition group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-cyan-500/20 text-white flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                      </svg>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-heading text-xs font-bold text-white group-hover:text-cyan-300 transition">X (Twitter)</div>
+                      <div className="font-mono text-[10px] text-slate-400 truncate">@all_saurav</div>
+                    </div>
+                  </a>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {/* Topic / Category */}
-                  <div>
-                    <label htmlFor="contact-type" className="form-label">
-                      Inquiry Topic <span className="text-purple-400">*</span>
-                    </label>
-                    <select
-                      id="contact-type"
-                      name="projectType"
-                      required
-                      value={formData.projectType}
-                      onChange={(e) => {
-                        setFormData({ ...formData, projectType: e.target.value });
-                        if (errors.projectType) setErrors((prev) => ({ ...prev, projectType: '' }));
-                      }}
-                      className={`form-select ${errors.projectType ? 'input-error' : ''}`}
-                    >
-                      <option value="">Select Topic</option>
-                      <option value="General Inquiry">General Inquiry / Say Hello</option>
-                      <option value="Full-Stack Web Development">Full-Stack Web Development</option>
-                      <option value="UI/UX & Web Design">UI/UX &amp; Web Design</option>
-                      <option value="Interactive 3D / WebGL">Interactive 3D / WebGL</option>
-                      <option value="Graphic Design & Branding">Graphic Design &amp; Branding</option>
-                      <option value="Collaboration or Partnership">Collaboration or Partnership</option>
-                      <option value="Other">Other</option>
-                    </select>
-                    {errors.projectType && (
-                      <p className="field-error-msg visible" role="alert">
-                        {errors.projectType}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Estimated Budget / Scope */}
-                  <div>
-                    <label htmlFor="contact-budget" className="form-label">
-                      Estimated Budget / Scope <span className="text-purple-400">*</span>
-                    </label>
-                    <select
-                      id="contact-budget"
-                      name="budget"
-                      required
-                      value={formData.budget}
-                      onChange={(e) => {
-                        setFormData({ ...formData, budget: e.target.value });
-                        if (errors.budget) setErrors((prev) => ({ ...prev, budget: '' }));
-                      }}
-                      className={`form-select ${errors.budget ? 'input-error' : ''}`}
-                    >
-                      <option value="">Select Scope / Budget</option>
-                      <option value="General Discussion / No Budget">General Discussion / No Budget</option>
-                      <option value="Small Task / Prototype (< $300)">Small Task / Prototype (&lt; $300)</option>
-                      <option value="Landing Page / Redesign ($300 – $700)">Landing Page / Redesign ($300 – $700)</option>
-                      <option value="Full Website / Web App ($700 – $1,500)">Full Website / Web App ($700 – $1,500)</option>
-                      <option value="Custom Complex Platform ($1,500+)">Custom Complex Platform ($1,500+)</option>
-                    </select>
-                    {errors.budget && (
-                      <p className="field-error-msg visible" role="alert">
-                        {errors.budget}
-                      </p>
-                    )}
-                  </div>
+                {/* Location & Response Info */}
+                <div className="pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+                  <span className="inline-flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-cyan-400" />
+                    <span>Kapilvastu &amp; Butwal, Nepal</span>
+                  </span>
+                  <span className="font-mono text-[11px] text-emerald-300 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Typical reply: &lt; 24h
+                  </span>
                 </div>
+              </div>
 
-                {/* Message */}
+              {/* Fast-Track Hire Me Callout Banner */}
+              <div data-hero-reveal className="p-4 rounded-2xl bg-gradient-to-r from-purple-900/30 via-midnight to-cyan-950/30 border border-purple-500/30 flex items-center justify-between gap-4">
                 <div>
-                  <label htmlFor="contact-message" className="form-label">
-                    Message Details <span className="text-purple-400">*</span>
-                  </label>
-                  <textarea
-                    id="contact-message"
-                    name="message"
-                    rows={5}
-                    required
-                    placeholder="Tell me about your inquiry, goals, or what you'd like to collaborate on..."
-                    value={formData.message}
-                    onChange={(e) => {
-                      setFormData({ ...formData, message: e.target.value });
-                      if (errors.message) setErrors((prev) => ({ ...prev, message: '' }));
-                    }}
-                    className={`form-textarea ${errors.message ? 'input-error' : ''}`}
-                  ></textarea>
-                  {errors.message && (
-                    <p className="field-error-msg visible" role="alert">
-                      {errors.message}
+                  <div className="font-heading text-sm font-bold text-white">Looking for fast-track hiring?</div>
+                  <div className="text-xs text-slate-300 mt-0.5">Direct chat, milestone escrow contracts &amp; client onboarding.</div>
+                </div>
+                <Link href="/hire" className="btn-primary text-xs py-2 px-3.5 shrink-0" data-magnetic>
+                  <span>Hire Me</span>
+                  <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Column (7 Cols): High-Contrast Glassmorphic General Inquiry Form */}
+            <div className="lg:col-span-7" data-hero-reveal>
+              <div className="glass-card send-message-card p-6 sm:p-9">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-6">
+                  <div>
+                    <h2 className="font-heading text-2xl font-bold text-white">Send a Message</h2>
+                    <p className="text-xs sm:text-sm text-slate-300 mt-1">
+                      Fill out the form below for general inquiries, questions, or project discussions.
                     </p>
+                  </div>
+                  <span className="tech-pill text-cyan-300 border-cyan-500/30">General Inquiry</span>
+                </div>
+
+                <form onSubmit={handleSubmit} noValidate className="space-y-5">
+                  {/* Accessible Error Summary */}
+                  {Object.keys(errors).length > 0 && (
+                    <div
+                      className="form-error-summary"
+                      role="alert"
+                      tabIndex={-1}
+                      aria-labelledby="contact-error-summary-title"
+                    >
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                        <h3 id="contact-error-summary-title" className="font-heading text-sm font-bold text-red-200">
+                          Please resolve the following before sending:
+                        </h3>
+                      </div>
+                      <ul className="list-disc pl-5 space-y-1 text-xs">
+                        {Object.values(errors).map((err, i) => (
+                          <li key={i}>{err}</li>
+                        ))}
+                      </ul>
+                    </div>
                   )}
-                </div>
 
-                {/* Submit Button */}
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="btn-primary w-full justify-center text-sm py-3.5 px-6 cursor-pointer"
-                    data-magnetic
-                  >
-                    <span>{isSubmitting ? 'Preparing Inquiry...' : 'Send Message'}</span>
-                    <span aria-hidden="true">↗</span>
-                  </button>
-                </div>
-
-                {/* Status Feedback & Direct Email Fallback */}
-                {submitted && (
-                  <div className="mt-5 p-5 rounded-xl bg-purple-500/15 border border-purple-500/40 text-slate-200 text-sm space-y-3" role="status" aria-live="polite">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-heading font-semibold text-white text-base">
-                        ✓ Project Brief Validated &amp; Ready
-                      </p>
-                      <span className="tech-pill text-cyan-300 border-cyan-500/40">Direct Dispatch</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    {/* Full Name */}
+                    <div>
+                      <label htmlFor="contact-name" className="form-label">
+                        Full Name <span className="text-purple-400">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="contact-name"
+                        name="name"
+                        required
+                        autoComplete="name"
+                        placeholder="e.g., Alex Morgan"
+                        value={formData.name}
+                        onChange={(e) => {
+                          setFormData({ ...formData, name: e.target.value });
+                          if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+                        }}
+                        className={`form-input ${errors.name ? 'input-error' : ''}`}
+                      />
+                      {errors.name && (
+                        <p className="field-error-msg visible" role="alert">
+                          {errors.name}
+                        </p>
+                      )}
                     </div>
-                    <p className="text-slate-300 text-xs leading-relaxed">
-                      Your inquiry for <strong>{formData.projectType}</strong> ({formData.budget}) is formatted and ready. Choose your preferred channel below to send immediately:
-                    </p>
-                    <div className="flex flex-wrap items-center gap-3 pt-1">
-                      <a href={mailtoHref} className="btn-primary text-xs py-2.5 px-4">
-                        <span>Open in Email Client</span>
-                        <span aria-hidden="true">↗</span>
-                      </a>
-                      <button
-                        type="button"
-                        onClick={handleCopyBrief}
-                        className="btn-secondary text-xs py-2.5 px-4 cursor-pointer"
-                      >
-                        <span>{copiedBrief ? '✓ Copied to Clipboard!' : 'Copy Formatted Brief'}</span>
-                      </button>
-                      <a
-                        href="https://www.upwork.com/freelancers/~010a6e73c111779a15"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-secondary text-xs py-2.5 px-4"
-                      >
-                        <span>Message on Upwork ↗</span>
-                      </a>
+
+                    {/* Email Address */}
+                    <div>
+                      <label htmlFor="contact-email" className="form-label">
+                        Email Address <span className="text-purple-400">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        id="contact-email"
+                        name="email"
+                        required
+                        autoComplete="email"
+                        placeholder="alex@company.com"
+                        value={formData.email}
+                        onChange={(e) => {
+                          setFormData({ ...formData, email: e.target.value });
+                          if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+                        }}
+                        className={`form-input ${errors.email ? 'input-error' : ''}`}
+                      />
+                      {errors.email && (
+                        <p className="field-error-msg visible" role="alert">
+                          {errors.email}
+                        </p>
+                      )}
                     </div>
                   </div>
-                )}
-              </form>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    {/* Topic / Category */}
+                    <div>
+                      <label htmlFor="contact-type" className="form-label">
+                        Inquiry Topic <span className="text-purple-400">*</span>
+                      </label>
+                      <select
+                        id="contact-type"
+                        name="projectType"
+                        required
+                        value={formData.projectType}
+                        onChange={(e) => {
+                          setFormData({ ...formData, projectType: e.target.value });
+                          if (errors.projectType) setErrors((prev) => ({ ...prev, projectType: '' }));
+                        }}
+                        className={`form-select ${errors.projectType ? 'input-error' : ''}`}
+                      >
+                        <option value="">Select Topic</option>
+                        <option value="General Inquiry">General Inquiry / Say Hello</option>
+                        <option value="Full-Stack Web Development">Full-Stack Web Development</option>
+                        <option value="UI/UX & Web Design">UI/UX &amp; Web Design</option>
+                        <option value="Interactive 3D / WebGL">Interactive 3D / WebGL</option>
+                        <option value="Graphic Design & Branding">Graphic Design &amp; Branding</option>
+                        <option value="Collaboration or Partnership">Collaboration or Partnership</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      {errors.projectType && (
+                        <p className="field-error-msg visible" role="alert">
+                          {errors.projectType}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Estimated Budget / Scope */}
+                    <div>
+                      <label htmlFor="contact-budget" className="form-label">
+                        Estimated Budget / Scope <span className="text-purple-400">*</span>
+                      </label>
+                      <select
+                        id="contact-budget"
+                        name="budget"
+                        required
+                        value={formData.budget}
+                        onChange={(e) => {
+                          setFormData({ ...formData, budget: e.target.value });
+                          if (errors.budget) setErrors((prev) => ({ ...prev, budget: '' }));
+                        }}
+                        className={`form-select ${errors.budget ? 'input-error' : ''}`}
+                      >
+                        <option value="">Select Scope / Budget</option>
+                        <option value="General Discussion / No Budget">General Discussion / No Budget</option>
+                        <option value="Small Task / Prototype (< $300)">Small Task / Prototype (&lt; $300)</option>
+                        <option value="Landing Page / Redesign ($300 – $700)">Landing Page / Redesign ($300 – $700)</option>
+                        <option value="Full Website / Web App ($700 – $1,500)">Full Website / Web App ($700 – $1,500)</option>
+                        <option value="Custom Complex Platform ($1,500+)">Custom Complex Platform ($1,500+)</option>
+                      </select>
+                      {errors.budget && (
+                        <p className="field-error-msg visible" role="alert">
+                          {errors.budget}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <label htmlFor="contact-message" className="form-label">
+                      Message Details <span className="text-purple-400">*</span>
+                    </label>
+                    <textarea
+                      id="contact-message"
+                      name="message"
+                      rows={5}
+                      required
+                      placeholder="Tell me about your inquiry, goals, or what you'd like to collaborate on..."
+                      value={formData.message}
+                      onChange={(e) => {
+                        setFormData({ ...formData, message: e.target.value });
+                        if (errors.message) setErrors((prev) => ({ ...prev, message: '' }));
+                      }}
+                      className={`form-textarea ${errors.message ? 'input-error' : ''}`}
+                    ></textarea>
+                    {errors.message && (
+                      <p className="field-error-msg visible" role="alert">
+                        {errors.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="btn-primary w-full justify-center text-sm py-3.5 px-6 cursor-pointer"
+                      data-magnetic
+                    >
+                      <span>{isSubmitting ? 'Preparing Inquiry...' : 'Send Message'}</span>
+                      <span aria-hidden="true">↗</span>
+                    </button>
+                  </div>
+
+                  {/* Status Feedback & Direct Email Fallback */}
+                  {submitted && (
+                    <div className="mt-5 p-5 rounded-xl bg-purple-500/15 border border-purple-500/40 text-slate-200 text-sm space-y-3" role="status" aria-live="polite">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-heading font-semibold text-white text-base">
+                          ✓ Project Brief Validated &amp; Ready
+                        </p>
+                        <span className="tech-pill text-cyan-300 border-cyan-500/40">Direct Dispatch</span>
+                      </div>
+                      <p className="text-slate-300 text-xs leading-relaxed">
+                        Your inquiry for <strong>{formData.projectType}</strong> ({formData.budget}) is formatted and ready. Choose your preferred channel below to send immediately:
+                      </p>
+                      <div className="flex flex-wrap items-center gap-3 pt-1">
+                        <a href={mailtoHref} className="btn-primary text-xs py-2.5 px-4">
+                          <span>Open in Email Client</span>
+                          <span aria-hidden="true">↗</span>
+                        </a>
+                        <button
+                          type="button"
+                          onClick={handleCopyBrief}
+                          className="btn-secondary text-xs py-2.5 px-4 cursor-pointer"
+                        >
+                          <span>{copiedBrief ? '✓ Copied to Clipboard!' : 'Copy Formatted Brief'}</span>
+                        </button>
+                        <a
+                          href="https://www.upwork.com/freelancers/~010a6e73c111779a15"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-secondary text-xs py-2.5 px-4"
+                        >
+                          <span>Message on Upwork ↗</span>
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </form>
+              </div>
             </div>
+
           </div>
-
-        </div>
-      </section>
-    </main>
-  );
-}
-
-export default function ContactClient() {
-  return (
-    <Suspense fallback={<div className="min-h-screen pt-32 text-center font-mono text-cyan-300">Loading contact...</div>}>
-      <ContactContent />
-    </Suspense>
+        </section>
+      </main>
+    </>
   );
 }

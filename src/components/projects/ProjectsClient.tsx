@@ -8,19 +8,30 @@ import { ExternalLink, Github, ArrowRight } from 'lucide-react';
 import { PROJECT_CASE_STUDIES, type ProjectCaseStudy } from '@/data/projectsData';
 import CaseStudyModal from '@/components/modals/CaseStudyModal';
 
-function ProjectsContent() {
+function SearchParamsReader({
+  onParams
+}: {
+  onParams: (filter: string, project: string) => void;
+}) {
   const searchParams = useSearchParams();
-  const initialFilter = searchParams.get('filter') || 'all';
-  const initialProject = searchParams.get('project');
+  useEffect(() => {
+    const f = searchParams.get('filter') || 'all';
+    const p = searchParams.get('project') || '';
+    onParams(f, p);
+  }, [searchParams, onParams]);
+  return null;
+}
 
-  const [activeFilter, setActiveFilter] = useState<string>(initialFilter);
+export default function ProjectsClient() {
+  const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<ProjectCaseStudy | null>(null);
 
-  useEffect(() => {
-    if (initialProject && PROJECT_CASE_STUDIES[initialProject as keyof typeof PROJECT_CASE_STUDIES]) {
-      setSelectedProject(PROJECT_CASE_STUDIES[initialProject as keyof typeof PROJECT_CASE_STUDIES]);
+  const handleUrlParams = (filter: string, project: string) => {
+    if (filter) setActiveFilter(filter);
+    if (project && PROJECT_CASE_STUDIES[project as keyof typeof PROJECT_CASE_STUDIES]) {
+      setSelectedProject(PROJECT_CASE_STUDIES[project as keyof typeof PROJECT_CASE_STUDIES]);
     }
-  }, [initialProject]);
+  };
 
   const filterTabs = [
     { id: 'all', label: 'All Projects' },
@@ -110,6 +121,9 @@ function ProjectsContent() {
 
   return (
     <>
+      <Suspense fallback={null}>
+        <SearchParamsReader onParams={handleUrlParams} />
+      </Suspense>
       <main id="main-content" className="pt-28 sm:pt-32 pb-20">
         {/* ===================================================================
              HEADER & INTERACTIVE CATEGORY FILTERS
@@ -635,10 +649,4 @@ function ProjectsContent() {
   );
 }
 
-export default function ProjectsClient() {
-  return (
-    <Suspense fallback={<div className="min-h-screen pt-32 text-center font-mono text-cyan-300">Loading projects...</div>}>
-      <ProjectsContent />
-    </Suspense>
-  );
-}
+

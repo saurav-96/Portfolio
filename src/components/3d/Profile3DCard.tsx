@@ -203,41 +203,47 @@ export default function Profile3DCard() {
             </div>
 
             <div className="profile-back-body">
-              <div className="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 space-y-1">
-                <div className="font-mono text-[10px] text-slate-400 uppercase tracking-widest">CREDENTIALS</div>
-                <div className="font-heading text-xs font-semibold text-white">Harvard CS50x Alum</div>
-                <div className="text-[11px] text-slate-300 leading-tight">Software &amp; Web Developer • UI/UX Specialist</div>
+              <div className="text-[11px] text-slate-300 leading-relaxed font-sans mb-3">
+                Creative Technologist &amp; CS student turning complex problems into intuitive interfaces, robust frontend architectures, and intelligent workflows.
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div className="p-2 rounded-lg bg-white/[0.02] border border-white/5">
-                  <span className="font-mono text-[9px] text-slate-400">LOCATION</span>
-                  <div className="text-slate-200 font-medium">Kapilvastu &amp; Butwal</div>
+              <div className="space-y-1.5 font-mono text-[10px] text-slate-400 mb-3 border-t border-b border-white/10 py-2">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">BASE:</span>
+                  <span className="text-slate-200">Nepal (UTC+5:45)</span>
                 </div>
-                <div className="p-2 rounded-lg bg-white/[0.02] border border-white/5">
-                  <span className="font-mono text-[9px] text-slate-400">AVAILABILITY</span>
-                  <div className="text-emerald-400 font-medium">Worldwide Remote</div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">FOCUS:</span>
+                  <span className="text-cyan-300">Three.js • React • AI Tools</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">MODE:</span>
+                  <span className="text-emerald-400">Remote / Global Contracts</span>
                 </div>
               </div>
-            </div>
 
-            <div className="profile-back-footer">
-              <span className="font-mono text-[10px] text-slate-400">360° Interactive 3D Card</span>
-              <span className="font-mono text-[10px] text-purple-300">Double-click to reset ↻</span>
+              <div className="flex flex-wrap gap-1">
+                <span className="tech-pill text-[9px] py-0.5 px-1.5">React</span>
+                <span className="tech-pill text-[9px] py-0.5 px-1.5">Three.js</span>
+                <span className="tech-pill text-[9px] py-0.5 px-1.5">Next.js</span>
+                <span className="tech-pill text-[9px] py-0.5 px-1.5">Python</span>
+                <span className="tech-pill text-[9px] py-0.5 px-1.5">Tailwind</span>
+                <span className="tech-pill text-[9px] py-0.5 px-1.5">Figma</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Core Focus Pillars */}
+      {/* Quick Focus Badges beneath Card */}
       <div className="grid grid-cols-2 gap-3 mt-4">
-        <div className="p-3 rounded-xl bg-white/[0.02] border border-white/10">
-          <div className="font-mono text-[11px] text-purple-300">PRIMARY FOCUS</div>
-          <div className="font-heading text-sm font-semibold text-white mt-0.5">Web Dev &amp; UI/UX</div>
+        <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 text-center">
+          <div className="font-heading font-bold text-white text-sm">Full-Stack &amp; 3D</div>
+          <div className="text-[11px] text-slate-400">Creative Engineering</div>
         </div>
-        <div className="p-3 rounded-xl bg-white/[0.02] border border-white/10">
-          <div className="font-mono text-[11px] text-cyan-300">EXPLORATION</div>
-          <div className="font-heading text-sm font-semibold text-white mt-0.5">3D Web &amp; AI Tools</div>
+        <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 text-center">
+          <div className="font-heading font-bold text-white text-sm">UI/UX &amp; AI</div>
+          <div className="text-[11px] text-slate-400">Design Systems &amp; Python</div>
         </div>
       </div>
     </div>

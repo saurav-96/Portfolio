@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { PROJECTS_LIST, type ProjectCaseStudy } from '@/data/projectsData';
 import CaseStudyModal from '@/components/modals/CaseStudyModal';
 
@@ -12,62 +11,105 @@ export default function FeaturedProjectsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const trackRef = useRef<HTMLDivElement | null>(null);
 
-  // Drag state
   const isDraggingRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
+  const dragDistanceRef = useRef(0);
 
   const total = PROJECTS_LIST.length;
 
   const updateIndexFromScroll = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
-    const cardWidth = track.firstElementChild ? (track.firstElementChild as HTMLElement).offsetWidth + 24 : 340;
-    const idx = Math.min(total - 1, Math.max(0, Math.round(track.scrollLeft / cardWidth)));
+    const firstCard = track.querySelector<HTMLElement>('.project-card');
+    if (!firstCard) return;
+
+    const cardWidth = firstCard.getBoundingClientRect().width;
+    const style = window.getComputedStyle(track);
+    const gap = parseFloat(style.columnGap || style.gap || '28') || 28;
+    const step = cardWidth + gap;
+
+    const idx = Math.min(total - 1, Math.max(0, Math.round(track.scrollLeft / step)));
     setCurrentIndex(idx);
   }, [total]);
 
-  const scrollToIndex = (idx: number) => {
+  const smoothSlide = (direction: 1 | -1) => {
     const track = trackRef.current;
     if (!track) return;
-    const targetIdx = Math.min(total - 1, Math.max(0, idx));
-    const cardWidth = track.firstElementChild ? (track.firstElementChild as HTMLElement).offsetWidth + 24 : 340;
+    const firstCard = track.querySelector<HTMLElement>('.project-card');
+    if (!firstCard) return;
+
+    const cardWidth = firstCard.getBoundingClientRect().width;
+    const style = window.getComputedStyle(track);
+    const gap = parseFloat(style.columnGap || style.gap || '28') || 28;
+    const singleStep = cardWidth + gap;
+
+    const trackWidth = track.clientWidth;
+    let slideAmount = singleStep;
+    if (trackWidth >= 1050) {
+      slideAmount = singleStep * 3;
+    } else if (trackWidth >= 680) {
+      slideAmount = singleStep * 2;
+    }
+
+    const target = track.scrollLeft + direction * slideAmount;
     track.scrollTo({
-      left: targetIdx * cardWidth,
+      left: target,
       behavior: 'smooth',
     });
-    setCurrentIndex(targetIdx);
   };
 
-  const handlePointerDown = (e: React.PointerEvent) => {
+  const onPointerDown = (e: React.PointerEvent) => {
     const track = trackRef.current;
     if (!track) return;
     isDraggingRef.current = true;
+    dragDistanceRef.current = 0;
     startXRef.current = e.pageX - track.offsetLeft;
     scrollLeftRef.current = track.scrollLeft;
+    track.classList.add('is-dragging');
   };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
+  const onPointerMove = (e: React.PointerEvent) => {
     const track = trackRef.current;
     if (!isDraggingRef.current || !track) return;
-    e.preventDefault();
     const x = e.pageX - track.offsetLeft;
-    const walk = (x - startXRef.current) * 1.5;
+    const walk = (x - startXRef.current) * 1.35;
+    dragDistanceRef.current += Math.abs(walk);
     track.scrollLeft = scrollLeftRef.current - walk;
     updateIndexFromScroll();
   };
 
-  const handlePointerUp = () => {
+  const onPointerUp = () => {
+    const track = trackRef.current;
+    if (!track) return;
     isDraggingRef.current = false;
+    track.classList.remove('is-dragging');
     updateIndexFromScroll();
   };
 
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
-    const handleScroll = () => updateIndexFromScroll();
+
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateIndexFromScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
     track.addEventListener('scroll', handleScroll, { passive: true });
-    return () => track.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', updateIndexFromScroll, { passive: true });
+    updateIndexFromScroll();
+
+    return () => {
+      track.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateIndexFromScroll);
+    };
   }, [updateIndexFromScroll]);
 
   const progressPercent = ((currentIndex + 1) / total) * 100;
@@ -87,22 +129,28 @@ export default function FeaturedProjectsCarousel() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <button
+              id="carousel-prev-btn"
               type="button"
-              onClick={() => scrollToIndex(currentIndex - 1)}
+              className="carousel-nav-btn"
+              onClick={() => smoothSlide(-1)}
               disabled={currentIndex === 0}
-              className="carousel-nav-btn p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
               aria-label="Previous project"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
             </button>
             <button
+              id="carousel-next-btn"
               type="button"
-              onClick={() => scrollToIndex(currentIndex + 1)}
+              className="carousel-nav-btn"
+              onClick={() => smoothSlide(1)}
               disabled={currentIndex >= total - 1}
-              className="carousel-nav-btn p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition cursor-pointer"
               aria-label="Next project"
             >
-              <ArrowRight className="w-5 h-5" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
             </button>
           </div>
           <Link href="/projects" className="btn-secondary text-sm">
@@ -112,47 +160,51 @@ export default function FeaturedProjectsCarousel() {
         </div>
       </div>
 
-      <div className="projects-carousel-container relative">
+      <div className="projects-carousel-container">
         <div
           ref={trackRef}
-          className="projects-carousel-track flex gap-6 overflow-x-auto pb-6 pt-2 scrollbar-none snap-x snap-mandatory cursor-grab active:cursor-grabbing select-none"
+          id="projects-carousel-track"
+          className="projects-carousel-track"
           tabIndex={0}
           aria-label="Featured Projects Carousel"
           role="region"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
         >
           {PROJECTS_LIST.map((project) => (
             <article
               key={project.id}
-              className="glass-card project-card p-5 flex flex-col justify-between w-[320px] sm:w-[380px] shrink-0 snap-start transition-all duration-300 hover:-translate-y-1.5"
+              className="glass-card project-card p-5 flex flex-col justify-between"
+              data-reveal-item
+              data-tilt
             >
               <div>
-                <div className="project-thumb-wrap mb-5 relative aspect-[4/3] rounded-2xl overflow-hidden bg-black/40 border border-white/10">
+                <div className="project-thumb-wrap mb-5">
                   <Image
                     src={project.thumbnail.startsWith('/') ? project.thumbnail : `/${project.thumbnail}`}
                     alt={project.title}
-                    fill
-                    className="project-thumb object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="380px"
+                    width={640}
+                    height={480}
+                    className="project-thumb"
+                    loading="lazy"
                   />
                 </div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="font-mono text-xs uppercase tracking-wider text-cyan-400 font-semibold">
+                  <span className="font-mono text-xs uppercase tracking-wider text-cyan-400">
                     {project.category}
                   </span>
                   <span className={`status-badge ${project.statusClass}`}>{project.projectNature}</span>
                 </div>
                 <h3 className="font-heading text-xl font-bold text-white mb-2">{project.title}</h3>
-                <p className="text-sm text-slate-300 leading-relaxed mb-4 line-clamp-3">{project.overview}</p>
+                <p className="text-sm text-slate-300 leading-relaxed mb-4">{project.overview}</p>
               </div>
 
               <div className="pt-3 border-t border-white/10">
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {project.techStack.slice(0, 4).map((tech) => (
-                    <span key={tech} className="tech-pill text-xs px-2.5 py-1 rounded-md bg-white/[0.04] text-slate-300 border border-white/5 font-mono">
+                    <span key={tech} className="tech-pill">
                       {tech}
                     </span>
                   ))}
@@ -160,7 +212,10 @@ export default function FeaturedProjectsCarousel() {
                 <div className="flex items-center justify-between gap-3">
                   <button
                     type="button"
-                    onClick={() => setSelectedProject(project)}
+                    onClick={(e) => {
+                      if (dragDistanceRef.current > 6) return;
+                      setSelectedProject(project);
+                    }}
                     className="text-xs font-mono uppercase tracking-wider text-purple-300 hover:text-cyan-300 transition cursor-pointer"
                   >
                     Case Study + Details
@@ -182,6 +237,7 @@ export default function FeaturedProjectsCarousel() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-sm font-heading font-semibold text-white hover:text-cyan-300 transition"
+                      aria-label={`View ${project.title} on GitHub`}
                     >
                       <span>GitHub</span>
                       <span className="circle-cta" aria-hidden="true">→</span>
@@ -213,10 +269,10 @@ export default function FeaturedProjectsCarousel() {
             <span className="text-slate-400 font-mono">07</span>
           </div>
 
-          <div className="carousel-progress-track mx-4 flex-1 max-w-xs h-1 rounded-full bg-white/10 overflow-hidden">
+          <div className="carousel-progress-track mx-4 flex-1 max-w-xs">
             <div
               id="carousel-progress-indicator"
-              className="carousel-progress-indicator h-full bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full transition-all duration-300"
+              className="carousel-progress-indicator"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -228,8 +284,12 @@ export default function FeaturedProjectsCarousel() {
         </div>
       </div>
 
-      {/* Case Study Modal */}
-      <CaseStudyModal project={selectedProject} onClose={() => setSelectedProject(null)} />
+      {selectedProject && (
+        <CaseStudyModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
     </>
   );
 }
