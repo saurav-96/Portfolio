@@ -1,10 +1,5 @@
 # Saurav Bhusal — 3D Interactive Portfolio (Next.js Edition)
 
-> **Production Domain:** [https://owns.com.np](https://owns.com.np)  
-> **Source Platform:** Faithful 1:1 migration from vanilla HTML5/CSS3/Three.js to **Next.js 15 (App Router)** with React 19, TypeScript, Tailwind CSS, GSAP ScrollTrigger, and Lenis smooth scrolling.
-
----
-
 ## 🌟 Executive Summary
 
 This repository contains the complete Next.js replica of Saurav Bhusal's 3D Interactive Developer & UI/UX Designer Portfolio. Every visual design detail, animation sequence, WebGL shader experience, responsive layout, modal interaction, and typography rule from the original website has been preserved with pixel-perfect fidelity and optimized for modern production performance.
