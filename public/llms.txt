@@ -1,0 +1,86 @@
+# Saurav Bhusal — Software & Web Developer, UI/UX Designer & Creative Technologist
+
+> Authoritative machine-readable developer profile and documentation for LLMs, AI agents, and search engines.
+> Production URL: https://owns.com.np
+> Base Location: Kapilvastu & Butwal, Nepal 🇳🇵
+> Work Mode: Worldwide Remote (Work from Home)
+> Primary Contact: sauravbhusal369@gmail.com | WhatsApp: +977 9766271244
+
+## Professional Overview
+Saurav Bhusal is a Software and Web Developer, UI/UX Designer, and Technical Analyst. He specializes in building high-performance modern web applications, interactive 3D WebGL experiences (Three.js), cinematic motion systems (GSAP / ScrollTrigger / Lenis), Figma design systems, and Python AI automation pipelines.
+
+## Education & Verified Credentials
+- **Harvard University CS50x (Introduction to Computer Science)**
+  - Verification: https://certificates.cs50.io/c95716f9-c771-4c7b-91b5-c0e45c322f56
+  - Focus: Algorithms, C, Python, SQL, HTML/CSS/JavaScript, Data Structures, Web Development, Browser Extensions.
+- **First Runner-Up — Web Design Hackathon 2026**
+  - Issued by NIT LEGEND & Butwal City. Recognized for exceptional responsive design, accessibility, and interactive UI/UX execution.
+
+## Core Technical Skills
+- **Frontend & Web:** HTML5, CSS3, JavaScript (ES6+), TypeScript, React 19, Next.js 15 (App Router), Tailwind CSS, Vite.
+- **3D & WebGL:** Three.js, React Three Fiber (R3F), WebGL Shaders, Procedural Particle Systems, OrbitControls, 360 Turntables.
+- **Animation & Motion:** GSAP 3 (GreenSock), ScrollTrigger, Lenis Smooth Scrolling, Layout Animations, Responsive Micro-Interactions.
+- **Software & Systems:** Python 3, C, REST APIs, Chromium Extension Architecture (Manifest V3), Git, GitHub.
+- **UI/UX Design:** Figma (Auto-Layout 5.0, Component Tokens, Design Systems, Interactive Wireframes & Prototypes), Canva.
+- **Performance & SEO:** 95+ Lighthouse Target, Core Web Vitals (LCP, INP, CLS), JSON-LD Structured Data, Semantic HTML5, WCAG 2.2 AA.
+
+## Featured Projects & Case Studies
+1. **SwasthyaSutra**
+   - Type: AI Smart Healthcare & Telemedicine Platform Prototype
+   - Stack: React, Tailwind CSS, SanjeevanAI Concept, Real-Time Vitals UI
+   - Live Demo: https://saurav-96.github.io/SwasthyaSutra/
+   - GitHub: https://github.com/saurav-96/SwasthyaSutra
+   - Summary: Dark-mode-ready digital healthcare portal with real-time patient vitals dashboards and AI symptom triage.
+
+2. **KeyFlow**
+   - Type: Tactile Keyboard Shortcut Command Center & SaaS Productivity App
+   - Stack: React 19, Vite 6, Tailwind CSS, LocalStorage Persistence, Vitest
+   - Live Demo: https://saurav-96.github.io/KeyFlow/
+   - GitHub: https://github.com/saurav-96/KeyFlow
+   - Summary: Tactile 3D keycaps interface for searching, organizing, and practicing multi-key shortcuts across VS Code, Figma, Chrome, and OS environments.
+
+3. **E-Government Platform (Butwal SmartGov)**
+   - Type: Civic Technology Municipal Portal Concept
+   - Stack: React 18, TypeScript, Tailwind CSS, Framer Motion, Recharts
+   - Live Demo: https://saurav-96.github.io/E-Governmet-platform/
+   - GitHub: https://github.com/saurav-96/E-Governmet-platform
+   - Summary: Reimagined municipal governance portal providing civic services directory, real-time department statuses, and citizen notices.
+
+4. **YouTube Power-Tools (TubeKit)**
+   - Type: Chromium Browser Extension (Manifest V3)
+   - Stack: JavaScript (ES6+), HTML5 Canvas & Video API, Chrome Storage Sync
+   - GitHub: https://github.com/saurav-96/TubeKit
+   - Credential: Harvard CS50x Capstone Final Project
+   - Summary: In-player utility pill offering 0.10x–4.00x playback speed steps, one-click lossless PNG video frame screenshots, and HD thumbnail extraction.
+
+5. **Mindful You**
+   - Type: Wellness Landing Page & Mobile UI/UX Concept
+   - Stack: Figma, Wireframing, Auto-Layout 5.0, Component Variants
+   - Summary: Calming meditation app interface focused on user onboarding, intuitive breathing timers, and conversion-oriented layouts.
+
+6. **AI Automation Lab**
+   - Type: Python & CLI Automation Sandbox
+   - Stack: Python, C, Prompt Workflows, JSON Schemas, CLI Tools
+   - GitHub: https://github.com/saurav-96
+   - Summary: Custom scripts for data scraping, file batch processing, API data syncing, and developer productivity tasks.
+
+7. **Creative Design Suite**
+   - Type: Visual Communication, YouTube Thumbnails & Brand Marks
+   - Stack: Figma, Canva, Vector Design, High-Contrast Color Theory
+   - Summary: Visual branding, high-CTR YouTube thumbnails, promotional hackathon posters (BuildNext), and logo concepts (NodeLoop).
+
+## Professional Services
+- **Web Development:** Custom responsive websites, modern landing pages, React/Next.js applications, 3D Three.js experiences, WordPress sites.
+- **UI/UX Design:** Figma wireframes, interactive clickable prototypes, full design systems, mobile app interfaces, website redesigns.
+- **AI Automation:** Python scripts, Chrome extensions (MV3), REST API data pipelines, workflow automation.
+- **Graphic Design:** High-CTR YouTube thumbnails, brand identities & logos, promotional event posters, social media campaign kits.
+
+## Verification & Escrow Channels
+- **Website:** https://owns.com.np
+- **GitHub:** https://github.com/saurav-96
+- **LinkedIn:** https://www.linkedin.com/in/saurav-b-502352415/
+- **Upwork (Escrow Verified):** https://www.upwork.com/freelancers/~010a6e73c111779a15
+- **Fiverr:** https://www.fiverr.com/sellers/saurav_bhusal
+- **Freelancer.com:** https://www.freelancer.com/u/sauravb369
+- **WhatsApp Direct:** https://wa.me/9779766271244
+- **Telegram Direct:** https://t.me/+9779766271244
