@@ -7,70 +7,75 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Prevent mobile address-bar hide/show from triggering expensive layout recalculations
+ScrollTrigger.config({
+  limitCallbacks: true,
+  ignoreMobileResize: true,
+});
+
 export default function MotionEngine() {
   const pathname = usePathname();
   const spotlightRef = useRef<HTMLDivElement | null>(null);
 
+  // 1. Ambient Cursor Spotlight (Desktop fine pointer only)
   useEffect(() => {
     const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!isFinePointer) return;
 
-    // 1. Ambient Cursor Spotlight (Desktop fine pointer only)
     let spotlight = spotlightRef.current;
-    let setX: ((val: number) => void) | null = null;
-    let setY: ((val: number) => void) | null = null;
-
-    if (isFinePointer && !prefersReducedMotion) {
+    if (!spotlight) {
+      spotlight = document.querySelector('.ambient-cursor-spotlight');
       if (!spotlight) {
-        spotlight = document.querySelector('.ambient-cursor-spotlight');
-        if (!spotlight) {
-          spotlight = document.createElement('div');
-          spotlight.className = 'ambient-cursor-spotlight';
-          spotlight.setAttribute('aria-hidden', 'true');
-          document.body.appendChild(spotlight);
-        }
-        spotlightRef.current = spotlight;
+        spotlight = document.createElement('div');
+        spotlight.className = 'ambient-cursor-spotlight';
+        spotlight.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(spotlight);
       }
-
-      setX = gsap.quickTo(spotlight, 'x', { duration: 0.35, ease: 'power2.out' });
-      setY = gsap.quickTo(spotlight, 'y', { duration: 0.35, ease: 'power2.out' });
-
-      const onMouseMove = (e: MouseEvent) => {
-        if (!document.body.classList.contains('cursor-active')) {
-          document.body.classList.add('cursor-active');
-        }
-        if (setX && setY) {
-          setX(e.clientX);
-          setY(e.clientY);
-        }
-      };
-
-      const onMouseLeave = () => {
-        document.body.classList.remove('cursor-active');
-      };
-
-      window.addEventListener('mousemove', onMouseMove, { passive: true });
-      window.addEventListener('mouseleave', onMouseLeave, { passive: true });
-
-      // Clean up pointer listeners on unmount
-      return () => {
-        window.removeEventListener('mousemove', onMouseMove);
-        window.removeEventListener('mouseleave', onMouseLeave);
-      };
+      spotlightRef.current = spotlight;
     }
+
+    const setX = gsap.quickTo(spotlight, 'x', { duration: 0.35, ease: 'power2.out' });
+    const setY = gsap.quickTo(spotlight, 'y', { duration: 0.35, ease: 'power2.out' });
+
+    const onMouseMove = (e: MouseEvent) => {
+      if (!document.body.classList.contains('cursor-active')) {
+        document.body.classList.add('cursor-active');
+      }
+      setX(e.clientX);
+      setY(e.clientY);
+    };
+
+    const onMouseLeave = () => {
+      document.body.classList.remove('cursor-active');
+    };
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    window.addEventListener('mouseleave', onMouseLeave, { passive: true });
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseleave', onMouseLeave);
+    };
   }, []);
 
+  // 2. Main ScrollTrigger & 3D Motion System
   useEffect(() => {
     const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Clean any prior ScrollTriggers for page content
     const ctx = gsap.context(() => {
-      // 2. High-Performance 3D Card Tilt + Cursor Radial Glare
-      const allGlassCards = document.querySelectorAll<HTMLElement>('.glass-card, .project-card');
       const tiltCleanups: (() => void)[] = [];
 
-      if (isFinePointer && !prefersReducedMotion) {
+      // A. 3D Card Tilt + Cursor Radial Glare (Desktop mouse/pointer only, excluding horizontal carousel cards)
+      const allGlassCards = Array.from(document.querySelectorAll<HTMLElement>('.glass-card, .project-card')).filter(
+        (card) => !card.closest('.projects-carousel-track')
+      );
+      allGlassCards.forEach((card) => {
+        if (!card.hasAttribute('data-tilt')) {
+          card.setAttribute('data-tilt', '');
+        }
+      });
+
+      if (isFinePointer) {
         allGlassCards.forEach((card) => {
           const maxTilt = parseFloat(card.getAttribute('data-tilt-max') || '8.5');
           let rafId: number | null = null;
@@ -117,7 +122,7 @@ export default function MotionEngine() {
           });
         });
 
-        // 3. 3D Portrait Stage Interactive Tilt (Home page)
+        // B. 3D Portrait Stage Interactive Tilt (Home page)
         const portraitStage = document.querySelector<HTMLElement>('.hero-portrait-stage');
         if (portraitStage) {
           let stageRaf: number | null = null;
@@ -139,7 +144,7 @@ export default function MotionEngine() {
           });
         }
 
-        // 4. Magnetic Buttons
+        // C. Magnetic Buttons with GSAP quickTo
         document.querySelectorAll<HTMLElement>('[data-magnetic], .btn-primary, .btn-secondary').forEach((btn) => {
           const xTo = gsap.quickTo(btn, 'x', { duration: 0.32, ease: 'power2.out' });
           const yTo = gsap.quickTo(btn, 'y', { duration: 0.32, ease: 'power2.out' });
@@ -148,6 +153,7 @@ export default function MotionEngine() {
           const onEnter = () => {
             btnRect = btn.getBoundingClientRect();
           };
+
           const onMove = (e: MouseEvent) => {
             if (!btnRect) btnRect = btn.getBoundingClientRect();
             const dx = e.clientX - (btnRect.left + btnRect.width / 2);
@@ -155,6 +161,7 @@ export default function MotionEngine() {
             xTo(dx * 0.22);
             yTo(dy * 0.25);
           };
+
           const onLeave = () => {
             btnRect = null;
             xTo(0);
@@ -173,10 +180,8 @@ export default function MotionEngine() {
         });
       }
 
-      if (prefersReducedMotion) return;
-
-      // 5. Hero Section 3D Entrance
-      const heroElements = document.querySelectorAll('[data-hero-reveal]');
+      // D. Hero Section 3D Entrance (Runs immediately on mount / route transition)
+      const heroElements = document.querySelectorAll<HTMLElement>('[data-hero-reveal]');
       if (heroElements.length > 0) {
         gsap.fromTo(
           heroElements,
@@ -202,23 +207,51 @@ export default function MotionEngine() {
         );
       }
 
-      // 6. Universal Scroll-Based 3D Component Animation
-      const scrollComponents = document.querySelectorAll(
-        'section:not(:first-of-type) .glass-card, section:not(:first-of-type) .project-card, [data-reveal-group] > *'
-      );
-
-      scrollComponents.forEach((card, index) => {
-        if (card.closest('[data-hero-reveal]') || card.closest('.projects-carousel-track')) return;
-
+      // E1. HOME CREDIBILITY STRIP 3D SCROLL ENTRANCE INTO PLACE
+      const credCards = Array.from(document.querySelectorAll<HTMLElement>('.home-credibility-strip .glass-card'));
+      if (credCards.length > 0) {
         gsap.fromTo(
-          card,
+          credCards,
           {
             opacity: 0,
-            y: 65,
-            z: -95,
-            rotationX: -18,
-            rotationY: index % 2 === 0 ? -4 : 4,
-            scale: 0.91,
+            y: 48,
+            z: -65,
+            rotationX: -12,
+            scale: 0.94,
+            transformPerspective: 1200,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            z: 0,
+            rotationX: 0,
+            scale: 1,
+            duration: 0.85,
+            stagger: 0.09,
+            ease: 'power3.out',
+            clearProps: 'transformPerspective,z',
+            scrollTrigger: {
+              trigger: document.querySelector('.home-credibility-strip') || credCards[0],
+              start: 'top 88%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+      }
+
+      // E2. HOME CREATIVE PHILOSOPHY 4-COLUMN BENTO 3D SCROLL ENTRANCE INTO PLACE
+      const philosophyGrid = document.querySelector<HTMLElement>('.home-philosophy-grid');
+      const philosophyCards = Array.from(document.querySelectorAll<HTMLElement>('.home-philosophy-grid .glass-card'));
+      if (philosophyCards.length > 0) {
+        gsap.fromTo(
+          philosophyCards,
+          {
+            opacity: 0,
+            y: 55,
+            z: -70,
+            rotationX: -14,
+            scale: 0.93,
             transformPerspective: 1200,
           },
           {
@@ -228,23 +261,183 @@ export default function MotionEngine() {
             rotationX: 0,
             rotationY: 0,
             scale: 1,
-            duration: 0.8,
+            duration: 0.85,
+            stagger: 0.10,
             ease: 'power3.out',
+            clearProps: 'transformPerspective,z',
+            scrollTrigger: {
+              trigger: philosophyGrid || philosophyCards[0],
+              start: 'top 86%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+      }
+
+      // E3. HOME SERVICES PREVIEW GRID 3D SCROLL ENTRANCE INTO PLACE
+      const servicesGrid = document.querySelector<HTMLElement>('.home-services-grid');
+      const servicesCards = Array.from(document.querySelectorAll<HTMLElement>('.home-services-grid .glass-card'));
+      if (servicesCards.length > 0) {
+        gsap.fromTo(
+          servicesCards,
+          {
+            opacity: 0,
+            y: 50,
+            z: -60,
+            rotationX: -12,
+            scale: 0.94,
+            transformPerspective: 1200,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            z: 0,
+            rotationX: 0,
+            scale: 1,
+            duration: 0.85,
+            stagger: 0.10,
+            ease: 'power3.out',
+            clearProps: 'transformPerspective,z',
+            scrollTrigger: {
+              trigger: servicesGrid || servicesCards[0],
+              start: 'top 86%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+      }
+
+      // E4. HOME BOTTOM CALL-TO-ACTION CARD 3D SCROLL ENTRANCE INTO PLACE
+      const ctaCard = document.querySelector<HTMLElement>('.home-cta-card');
+      if (ctaCard) {
+        gsap.fromTo(
+          ctaCard,
+          {
+            opacity: 0,
+            y: 50,
+            z: -65,
+            rotationX: -10,
+            scale: 0.95,
+            transformPerspective: 1200,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            z: 0,
+            rotationX: 0,
+            scale: 1,
+            duration: 0.85,
+            ease: 'power3.out',
+            clearProps: 'transformPerspective,z',
+            scrollTrigger: {
+              trigger: ctaCard,
+              start: 'top 88%',
+              toggleActions: 'play none none none',
+              once: true,
+            },
+          }
+        );
+      }
+
+      // E5. UNIVERSAL SCROLL-BASED 3D COMPONENT ANIMATION (Subpages & Other Sections)
+      const otherCards = Array.from(
+        document.querySelectorAll<HTMLElement>('.glass-card, .project-card, [data-reveal-item]')
+      ).filter((card) => {
+        if (card.closest('[data-hero-reveal]')) return false;
+        if (card.closest('.home-credibility-strip')) return false;
+        if (card.closest('.home-philosophy-grid')) return false;
+        if (card.closest('.home-services-grid')) return false;
+        if (card.closest('.home-cta-card')) return false;
+        if (card.closest('.projects-carousel-track')) return false;
+        if (card.tagName === 'MAIN' || card.tagName === 'SECTION') return false;
+        return true;
+      });
+
+      otherCards.forEach((card, index) => {
+        gsap.fromTo(
+          card,
+          {
+            opacity: 0,
+            y: 50,
+            z: -65,
+            rotationX: -12,
+            rotationY: index % 2 === 0 ? -3 : 3,
+            scale: 0.94,
+            transformPerspective: 1200,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            z: 0,
+            rotationX: 0,
+            rotationY: 0,
+            scale: 1,
+            duration: 0.80,
+            ease: 'power3.out',
+            clearProps: 'transformPerspective,z',
             scrollTrigger: {
               trigger: card,
-              start: 'top 92%',
-              toggleActions: 'play none none reverse',
-            },
-            onComplete: () => {
-              (card as HTMLElement).style.transform = '';
-              (card as HTMLElement).style.opacity = '1';
+              start: 'top 90%',
+              toggleActions: 'play none none none',
+              once: true,
             },
           }
         );
       });
 
-      // 7. Section Headings & Badges 3D Scroll Entrance
-      const sectionHeaders = document.querySelectorAll(
+      // F. DEDICATED FEATURED PROJECTS CAROUSEL SMOOTH SCROLL REVEAL (Home page)
+      const projectsCarouselTrack = document.getElementById('projects-carousel-track');
+      if (projectsCarouselTrack) {
+        const carouselSection = projectsCarouselTrack.closest('section');
+        const sectionHeader = carouselSection ? carouselSection.querySelector<HTMLElement>('[data-reveal-item]') : null;
+        const initialCards = Array.from(projectsCarouselTrack.querySelectorAll<HTMLElement>('.project-card')).slice(0, 3);
+        const remainingCards = Array.from(projectsCarouselTrack.querySelectorAll<HTMLElement>('.project-card')).slice(3);
+
+        gsap.set(remainingCards, { opacity: 1, y: 0, scale: 1 });
+
+        const carouselTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: carouselSection || projectsCarouselTrack,
+            start: 'top 82%',
+            toggleActions: 'play none none none',
+          },
+        });
+
+        if (sectionHeader) {
+          carouselTl.fromTo(
+            sectionHeader,
+            { opacity: 0, y: 36 },
+            { opacity: 1, y: 0, duration: 0.85, ease: 'power3.out' }
+          );
+        }
+
+        carouselTl.fromTo(
+          initialCards,
+          {
+            opacity: 0,
+            y: 52,
+            scale: 0.94,
+            rotationX: -10,
+            transformPerspective: 1200,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            rotationX: 0,
+            duration: 0.95,
+            stagger: 0.09,
+            ease: 'power3.out',
+            clearProps: 'transform,opacity',
+          },
+          '-=0.45'
+        );
+      }
+
+      // G. Section Headings & Badges 3D Scroll Entrance
+      const sectionHeaders = document.querySelectorAll<HTMLElement>(
         'section:not(:first-of-type) .eyebrow-badge, section:not(:first-of-type) h2, section:not(:first-of-type) > div > .max-w-2xl'
       );
       sectionHeaders.forEach((header) => {
@@ -268,18 +461,19 @@ export default function MotionEngine() {
             scrollTrigger: {
               trigger: header,
               start: 'top 90%',
-              toggleActions: 'play none none reverse',
+              toggleActions: 'play none none none',
+              once: true,
             },
             onComplete: () => {
-              (header as HTMLElement).style.transform = '';
-              (header as HTMLElement).style.opacity = '1';
+              header.style.transform = '';
+              header.style.opacity = '1';
             },
           }
         );
       });
 
-      // 8. Scroll-Based Parallax on Hero Portrait, Studio Aura & Base Orbit Ring
-      const portraitStage = document.querySelector('.hero-portrait-stage');
+      // H. Scroll-Based Parallax on Hero Portrait, Studio Aura & Base Orbit Ring
+      const portraitStage = document.querySelector<HTMLElement>('.hero-portrait-stage');
       if (portraitStage) {
         gsap.to('.portrait-frame', {
           y: -32,
@@ -320,7 +514,32 @@ export default function MotionEngine() {
         });
       }
 
-      // 9. Scroll Progress Bar Sync
+      // I. Dynamic Working Process Timeline (Services page)
+      const timelineContainer = document.getElementById('working-process-timeline');
+      const timelineFill = document.getElementById('timeline-progress-fill');
+      if (timelineContainer && timelineFill) {
+        const steps = timelineContainer.querySelectorAll('.timeline-step');
+        ScrollTrigger.create({
+          trigger: timelineContainer,
+          start: 'top 78%',
+          end: 'bottom 60%',
+          scrub: 0.35,
+          onUpdate: (self) => {
+            const p = self.progress;
+            timelineFill.style.transform = `scaleY(${p})`;
+            steps.forEach((step, idx) => {
+              const stepThreshold = steps.length > 1 ? idx / (steps.length - 1) : 0;
+              if (p >= stepThreshold - 0.06) {
+                step.classList.add('is-active');
+              } else {
+                step.classList.remove('is-active');
+              }
+            });
+          },
+        });
+      }
+
+      // J. Top Scroll Progress Bar Sync
       const progressBar = document.getElementById('scroll-progress-bar');
       if (progressBar) {
         ScrollTrigger.create({
@@ -332,10 +551,37 @@ export default function MotionEngine() {
         });
       }
 
-      // Refresh ScrollTrigger after DOM has settled
-      setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 150);
+      // K. Pause Offscreen CSS Keyframe Work (optimize-web-animations)
+      if ('IntersectionObserver' in window) {
+        const sectionObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              entry.target.classList.toggle('is-offscreen', !entry.isIntersecting);
+            });
+          },
+          { threshold: 0.02, rootMargin: '120px 0px 120px 0px' }
+        );
+        document.querySelectorAll('section, footer').forEach((sec) => {
+          sectionObserver.observe(sec);
+        });
+      }
+
+      // L. Multi-Stage ScrollTrigger Refresh to account for dynamic fonts & image loading
+      const refreshTimers = [
+        setTimeout(() => ScrollTrigger.refresh(), 100),
+        setTimeout(() => ScrollTrigger.refresh(), 350),
+        setTimeout(() => ScrollTrigger.refresh(), 800),
+      ];
+
+      const onWindowLoad = () => ScrollTrigger.refresh();
+      window.addEventListener('load', onWindowLoad);
+      window.addEventListener('resize', onWindowLoad);
+
+      tiltCleanups.push(() => {
+        refreshTimers.forEach(clearTimeout);
+        window.removeEventListener('load', onWindowLoad);
+        window.removeEventListener('resize', onWindowLoad);
+      });
 
       return () => {
         tiltCleanups.forEach((cleanup) => cleanup());
@@ -347,10 +593,5 @@ export default function MotionEngine() {
     };
   }, [pathname]);
 
-  return (
-    <>
-      {/* Fixed Scroll Progress Indicator */}
-      <div id="scroll-progress-bar" className="scroll-progress-bar" aria-hidden="true" />
-    </>
-  );
+  return null;
 }

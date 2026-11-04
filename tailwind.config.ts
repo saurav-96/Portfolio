@@ -34,10 +34,10 @@ const config: Config = {
         },
       },
       fontFamily: {
-        heading: ['Space Grotesk', 'Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-        hand: ['Caveat', 'cursive'],
+        heading: ['var(--font-heading)', 'Space Grotesk', 'Plus Jakarta Sans', '-apple-system', 'sans-serif'],
+        body: ['var(--font-body)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        mono: ['var(--font-mono)', 'JetBrains Mono', 'Fira Code', 'monospace'],
+        hand: ['var(--font-hand)', 'Caveat', 'cursive'],
       },
       boxShadow: {
         glass: '0 24px 60px -14px rgba(0, 0, 0, 0.75), inset 0 1px 0 0 rgba(255, 255, 255, 0.14)',

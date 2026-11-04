@@ -16,11 +16,11 @@ export const SITE_CONFIG = {
     upwork: 'https://www.upwork.com/freelancers/~010a6e73c111779a15',
     fiverr: 'https://www.fiverr.com/saurav_bhusal',
     freelancer: 'https://www.freelancer.com/u/saurav96',
-    whatsapp: 'https://wa.me/9779812984180',
-    telegram: 'https://t.me/saurav_bhusal',
+    whatsapp: 'https://wa.me/9779766271244',
+    telegram: 'https://t.me/+9779766271244',
     instagram: 'https://instagram.com/saurav.bhusal',
     facebook: 'https://facebook.com/saurav.bhusal.official',
-    twitter: 'https://x.com/saurav_bhusal',
+    twitter: 'https://x.com/all_saurav',
   },
 };
 
@@ -176,3 +176,4 @@ export function generatePageMetadata({
 
 export const getPersonSchema = generatePersonJsonLd;
 export const getWebSiteSchema = generateWebSiteJsonLd;
+

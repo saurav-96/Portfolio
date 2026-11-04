@@ -14,6 +14,7 @@ import {
   Cpu,
   Palette,
   ArrowRight,
+  ArrowUpRight,
   ExternalLink,
 } from 'lucide-react';
 import Portrait360 from '@/components/3d/Portrait360';
@@ -91,53 +92,93 @@ export default function HomePage() {
         </div>
 
         {/* Credibility & Highlights Strip */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10" data-reveal-group>
-          <Link href="/projects" className="glass-card p-4 flex items-center gap-4 group" data-reveal-item data-tilt>
-            <div className="icon-box w-12 h-12 bg-gradient-to-br from-cyan-500/25 to-blue-600/15 border border-cyan-400/40 text-cyan-300 shrink-0">
-              <FolderGit2 className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="font-heading font-bold text-white text-base group-hover:text-cyan-300 transition">
-                7+ Live &amp; Lab Projects
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 home-credibility-strip" data-reveal-group>
+          <Link
+            href="/projects"
+            className="glass-card p-4 flex items-center justify-between gap-3 group h-full min-h-[82px] border border-white/10 hover:border-cyan-400/40 transition-all shadow-md"
+            data-reveal-item
+            data-tilt
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="icon-box w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/25 to-blue-600/15 border border-cyan-400/40 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.25)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <FolderGit2 className="w-5 h-5" />
               </div>
-              <div className="text-xs text-slate-300">Web Apps, MV3 &amp; UI/UX</div>
+              <div className="min-w-0">
+                <div className="font-sans font-bold text-white text-[15px] tracking-tight group-hover:text-cyan-300 transition-colors truncate">
+                  7+ Live &amp; Lab Projects
+                </div>
+                <div className="font-sans text-[12px] text-slate-400 font-medium tracking-wide truncate">
+                  Web Apps, MV3 &amp; UI/UX
+                </div>
+              </div>
             </div>
+            <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
           </Link>
 
-          <Link href="/about#achievements" className="glass-card p-4 flex items-center gap-4 group" data-reveal-item data-tilt>
-            <div className="icon-box w-12 h-12 bg-gradient-to-br from-purple-500/25 to-indigo-600/15 border border-purple-400/40 text-purple-300 shrink-0">
-              <Award className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="font-heading font-bold text-white text-base group-hover:text-purple-300 transition">
-                1st Runner-Up
+          <Link
+            href="/about#achievements"
+            className="glass-card p-4 flex items-center justify-between gap-3 group h-full min-h-[82px] border border-white/10 hover:border-purple-400/40 transition-all shadow-md"
+            data-reveal-item
+            data-tilt
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="icon-box w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/25 to-indigo-600/15 border border-purple-400/40 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.25)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Award className="w-5 h-5" />
               </div>
-              <div className="text-xs text-slate-300">Web Design Hackathon (NIT LEGEND)</div>
+              <div className="min-w-0">
+                <div className="font-sans font-bold text-white text-[15px] tracking-tight group-hover:text-purple-300 transition-colors truncate">
+                  1st Runner-Up
+                </div>
+                <div className="font-sans text-[12px] text-slate-400 font-medium tracking-wide truncate">
+                  Web Design Hackathon 2026
+                </div>
+              </div>
             </div>
+            <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-purple-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
           </Link>
 
-          <Link href="/about#achievements" className="glass-card p-4 flex items-center gap-4 group" data-reveal-item data-tilt>
-            <div className="icon-box w-12 h-12 bg-gradient-to-br from-amber-500/25 to-orange-600/15 border border-amber-400/40 text-amber-300 shrink-0">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="font-heading font-bold text-white text-base group-hover:text-amber-300 transition">
-                6 Verified Credentials
+          <Link
+            href="/about#achievements"
+            className="glass-card p-4 flex items-center justify-between gap-3 group h-full min-h-[82px] border border-white/10 hover:border-amber-400/40 transition-all shadow-md"
+            data-reveal-item
+            data-tilt
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="icon-box w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/25 to-orange-600/15 border border-amber-400/40 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.25)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <ShieldCheck className="w-5 h-5" />
               </div>
-              <div className="text-xs text-slate-300">Harvard CS50x &amp; freeCodeCamp</div>
+              <div className="min-w-0">
+                <div className="font-sans font-bold text-white text-[15px] tracking-tight group-hover:text-amber-300 transition-colors truncate">
+                  6 Verified Credentials
+                </div>
+                <div className="font-sans text-[12px] text-slate-400 font-medium tracking-wide truncate">
+                  Harvard CS50x &amp; freeCodeCamp
+                </div>
+              </div>
             </div>
+            <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-amber-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
           </Link>
 
-          <Link href="/contact" className="glass-card p-4 flex items-center gap-4 group" data-reveal-item data-tilt>
-            <div className="icon-box w-12 h-12 bg-gradient-to-br from-emerald-500/25 to-teal-600/15 border border-emerald-400/40 text-emerald-300 shrink-0">
-              <Globe2 className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="font-heading font-bold text-white text-base group-hover:text-emerald-300 transition">
-                Global Freelancer
+          <Link
+            href="/contact"
+            className="glass-card p-4 flex items-center justify-between gap-3 group h-full min-h-[82px] border border-white/10 hover:border-emerald-400/40 transition-all shadow-md"
+            data-reveal-item
+            data-tilt
+          >
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="icon-box w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/25 to-teal-600/15 border border-emerald-400/40 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.25)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <Globe2 className="w-5 h-5" />
               </div>
-              <div className="text-xs text-slate-300">Upwork, Fiverr &amp; Freelancer</div>
+              <div className="min-w-0">
+                <div className="font-sans font-bold text-white text-[15px] tracking-tight group-hover:text-emerald-300 transition-colors truncate">
+                  Global Freelancer
+                </div>
+                <div className="font-sans text-[12px] text-slate-400 font-medium tracking-wide truncate">
+                  Upwork, Fiverr &amp; Freelancer
+                </div>
+              </div>
             </div>
+            <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
           </Link>
         </div>
       </section>
@@ -166,72 +207,100 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 home-philosophy-grid">
           {/* Pillar 1 */}
-          <div className="glass-card p-6 flex flex-col justify-between" data-reveal-item data-tilt>
+          <div className="glass-card p-6 flex flex-col justify-between h-full min-h-[350px] border border-white/10 hover:border-purple-400/35 transition-all shadow-lg" data-reveal-item data-tilt>
             <div>
-              <div className="icon-box w-12 h-12 bg-gradient-to-br from-purple-500/25 to-indigo-600/15 border border-purple-400/40 text-purple-300 mb-5">
-                <Lightbulb className="w-6 h-6" />
+              <div className="flex items-center justify-between mb-5">
+                <div className="icon-box w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/25 to-indigo-600/15 border border-purple-400/40 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.25)] flex items-center justify-center">
+                  <Lightbulb className="w-6 h-6" />
+                </div>
+                <span className="font-sans text-[11px] font-semibold tracking-wider text-purple-300 bg-purple-950/40 border border-purple-500/30 px-2.5 py-1 rounded-full">
+                  Concept & Vision
+                </span>
               </div>
-              <span className="font-mono text-xs text-purple-400">01 / CONCEPT</span>
-              <h3 className="font-heading text-lg font-bold text-white mt-1 mb-2.5">Innovative Design Thinking</h3>
+              <h3 className="font-sans text-lg sm:text-xl font-bold text-white mb-2.5 tracking-tight">
+                Innovative Design Thinking
+              </h3>
               <p className="text-sm text-slate-300 leading-relaxed font-body">
                 Approaching every interface with fresh visual exploration—combining clean editorial hierarchy, subtle motion, and purposeful layouts.
               </p>
             </div>
-            <div className="mt-5 pt-3 border-t border-white/10 text-xs font-mono text-slate-400">
-              Visual Clarity • Aesthetic Direction
+            <div className="mt-6 pt-3.5 border-t border-white/10 flex flex-wrap gap-1.5 font-sans text-[11px] font-medium">
+              <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 text-slate-300">Visual Clarity</span>
+              <span className="px-2 py-0.5 rounded-md bg-purple-950/30 border border-purple-500/20 text-purple-300">Aesthetic Direction</span>
             </div>
           </div>
 
           {/* Pillar 2 */}
-          <div className="glass-card p-6 flex flex-col justify-between" data-reveal-item data-tilt>
+          <div className="glass-card p-6 flex flex-col justify-between h-full min-h-[350px] border border-white/10 hover:border-cyan-400/35 transition-all shadow-lg" data-reveal-item data-tilt>
             <div>
-              <div className="icon-box w-12 h-12 bg-gradient-to-br from-cyan-500/25 to-blue-600/15 border border-cyan-400/40 text-cyan-300 mb-5">
-                <Users className="w-6 h-6" />
+              <div className="flex items-center justify-between mb-5">
+                <div className="icon-box w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/25 to-blue-600/15 border border-cyan-400/40 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.25)] flex items-center justify-center">
+                  <Users className="w-6 h-6" />
+                </div>
+                <span className="font-sans text-[11px] font-semibold tracking-wider text-cyan-300 bg-cyan-950/40 border border-cyan-500/30 px-2.5 py-1 rounded-full">
+                  User Centricity
+                </span>
               </div>
-              <span className="font-mono text-xs text-cyan-400">02 / EMPATHY</span>
-              <h3 className="font-heading text-lg font-bold text-white mt-1 mb-2.5">User-Centered Approach</h3>
+              <h3 className="font-sans text-lg sm:text-xl font-bold text-white mb-2.5 tracking-tight">
+                User-Centered Approach
+              </h3>
               <p className="text-sm text-slate-300 leading-relaxed font-body">
                 Designing around real human behavior—prioritizing intuitive navigation, accessible contrast, and frictionless journeys across devices.
               </p>
             </div>
-            <div className="mt-5 pt-3 border-t border-white/10 text-xs font-mono text-slate-400">
-              Intuitive Flows • Accessibility
+            <div className="mt-6 pt-3.5 border-t border-white/10 flex flex-wrap gap-1.5 font-sans text-[11px] font-medium">
+              <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 text-slate-300">Intuitive Flows</span>
+              <span className="px-2 py-0.5 rounded-md bg-cyan-950/30 border border-cyan-500/20 text-cyan-300">Accessibility</span>
             </div>
           </div>
 
           {/* Pillar 3 */}
-          <div className="glass-card p-6 flex flex-col justify-between" data-reveal-item data-tilt>
+          <div className="glass-card p-6 flex flex-col justify-between h-full min-h-[350px] border border-white/10 hover:border-indigo-400/35 transition-all shadow-lg" data-reveal-item data-tilt>
             <div>
-              <div className="icon-box w-12 h-12 bg-gradient-to-br from-indigo-500/25 to-purple-600/15 border border-indigo-400/40 text-indigo-300 mb-5">
-                <Code2 className="w-6 h-6" />
+              <div className="flex items-center justify-between mb-5">
+                <div className="icon-box w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500/25 to-purple-600/15 border border-indigo-400/40 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.25)] flex items-center justify-center">
+                  <Code2 className="w-6 h-6" />
+                </div>
+                <span className="font-sans text-[11px] font-semibold tracking-wider text-indigo-300 bg-indigo-950/40 border border-indigo-500/30 px-2.5 py-1 rounded-full">
+                  Design & Code
+                </span>
               </div>
-              <span className="font-mono text-xs text-indigo-300">03 / EXECUTION</span>
-              <h3 className="font-heading text-lg font-bold text-white mt-1 mb-2.5">Design + Development Mindset</h3>
+              <h3 className="font-sans text-lg sm:text-xl font-bold text-white mb-2.5 tracking-tight">
+                Design + Development Mindset
+              </h3>
               <p className="text-sm text-slate-300 leading-relaxed font-body">
                 Bridging the gap between Figma prototypes and clean frontend code so design intent is preserved down to every micro-interaction.
               </p>
             </div>
-            <div className="mt-5 pt-3 border-t border-white/10 text-xs font-mono text-slate-400">
-              Figma to Code • Interactive Web
+            <div className="mt-6 pt-3.5 border-t border-white/10 flex flex-wrap gap-1.5 font-sans text-[11px] font-medium">
+              <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 text-slate-300">Figma to Code</span>
+              <span className="px-2 py-0.5 rounded-md bg-indigo-950/30 border border-indigo-500/20 text-indigo-300">Interactive Web</span>
             </div>
           </div>
 
           {/* Pillar 4 */}
-          <div className="glass-card p-6 flex flex-col justify-between" data-reveal-item data-tilt>
+          <div className="glass-card p-6 flex flex-col justify-between h-full min-h-[350px] border border-white/10 hover:border-emerald-400/35 transition-all shadow-lg" data-reveal-item data-tilt>
             <div>
-              <div className="icon-box w-12 h-12 bg-gradient-to-br from-emerald-500/25 to-teal-600/15 border border-emerald-400/40 text-emerald-300 mb-5">
-                <Sparkles className="w-6 h-6" />
+              <div className="flex items-center justify-between mb-5">
+                <div className="icon-box w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/25 to-teal-600/15 border border-emerald-400/40 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.25)] flex items-center justify-center">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <span className="font-sans text-[11px] font-semibold tracking-wider text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+                  Continuous Growth
+                </span>
               </div>
-              <span className="font-mono text-xs text-emerald-400">04 / EVOLUTION</span>
-              <h3 className="font-heading text-lg font-bold text-white mt-1 mb-2.5">Continuous Learning &amp; Long-Term Impact</h3>
+              <h3 className="font-sans text-lg sm:text-xl font-bold text-white mb-2.5 tracking-tight">
+                Continuous Learning &amp; Long-Term Impact
+              </h3>
               <p className="text-sm text-slate-300 leading-relaxed font-body">
                 Continuously experimenting with Three.js, modern frontend workflows, and AI automation to build forward-looking digital products.
               </p>
             </div>
-            <div className="mt-5 pt-3 border-t border-white/10 text-xs font-mono text-slate-400">
-              Curiosity • Growth Mindset
+            <div className="mt-6 pt-3.5 border-t border-white/10 flex flex-wrap gap-1.5 font-sans text-[11px] font-medium">
+              <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 text-slate-300">Curiosity</span>
+              <span className="px-2 py-0.5 rounded-md bg-emerald-950/30 border border-emerald-500/20 text-emerald-300">Growth Mindset</span>
             </div>
           </div>
         </div>
@@ -257,7 +326,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 home-services-grid">
           <Link href="/services#web-development" className="glass-card p-6 group block" data-reveal-item data-tilt>
             <div className="icon-box w-12 h-12 bg-gradient-to-br from-purple-500/25 to-indigo-600/15 border border-purple-400/40 text-purple-300 mb-4">
               <Globe className="w-5 h-5" />
@@ -320,7 +389,7 @@ export default function HomePage() {
            SECTION 5: CLOSING CTA BANNER
            =================================================================== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6" data-reveal-group>
-        <div className="glass-card p-8 sm:p-12 relative overflow-hidden" data-reveal-item>
+        <div className="glass-card p-8 sm:p-12 relative overflow-hidden home-cta-card" data-reveal-item>
           <div className="absolute -right-16 -bottom-24 w-80 h-80 rounded-full bg-gradient-to-tr from-purple-600/35 via-cyan-500/25 to-transparent blur-2xl pointer-events-none" aria-hidden="true" />
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">

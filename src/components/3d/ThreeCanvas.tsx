@@ -7,6 +7,31 @@ import * as THREE from 'three';
 export default function ThreeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const pathname = usePathname();
+  const targetBasePosRef = useRef({ x: 3.85, y: 0.35, z: -2.8 });
+
+  // Update target 3D base position smoothly when navigating routes
+  useEffect(() => {
+    const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 768;
+    const isHome = pathname === '/' || pathname === '';
+    const isServices = pathname.startsWith('/services');
+    const isProjects = pathname.startsWith('/projects');
+    const isHire = pathname.startsWith('/hire');
+    const isContact = pathname.startsWith('/contact');
+
+    if (isSmallScreen) {
+      targetBasePosRef.current = { x: 2.2, y: -0.8, z: -5.8 };
+    } else if (isHome) {
+      targetBasePosRef.current = { x: 4.6, y: 0.35, z: -4.5 };
+    } else if (isServices) {
+      targetBasePosRef.current = { x: 5.2, y: 0.55, z: -5.4 };
+    } else if (isProjects) {
+      targetBasePosRef.current = { x: 5.0, y: 0.45, z: -4.8 };
+    } else if (isHire || isContact) {
+      targetBasePosRef.current = { x: 5.4, y: 0.25, z: -5.6 };
+    } else {
+      targetBasePosRef.current = { x: 5.0, y: 0.35, z: -5.0 };
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -38,60 +63,44 @@ export default function ThreeCanvas() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x06060b, 0.024);
+    scene.fog = new THREE.FogExp2(0x06060b, 0.038);
 
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.set(0, 0, 11.5);
 
-    // Studio Lighting Setup
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.68);
+    // Studio Lighting Setup — Soft Ambient Atmosphere
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
     scene.add(ambientLight);
 
-    const purpleLight = new THREE.PointLight(0xa855f7, 5.2, 45);
+    const purpleLight = new THREE.PointLight(0xa855f7, 3.6, 45);
     purpleLight.position.set(6.5, 4.5, 6.0);
     scene.add(purpleLight);
 
-    const cyanLight = new THREE.PointLight(0x06b6d4, 5.2, 45);
+    const cyanLight = new THREE.PointLight(0x06b6d4, 3.6, 45);
     cyanLight.position.set(-6.5, -3.5, 6.0);
     scene.add(cyanLight);
 
-    const indigoRimLight = new THREE.PointLight(0x4f46e5, 3.8, 36);
+    const indigoRimLight = new THREE.PointLight(0x4f46e5, 2.8, 36);
     indigoRimLight.position.set(0, 6.5, -4.5);
     scene.add(indigoRimLight);
 
-    // Master 3D Sculpture Group
+    // Master 3D Sculpture Group (persists across all page navigations with silky smooth lerp)
+    const isHome = typeof window !== 'undefined' ? (window.location.pathname === '/' || window.location.pathname === '') : true;
     const mainGroup = new THREE.Group();
-    const isHome = pathname === '/' || pathname === '';
-    const isServices = pathname.startsWith('/services');
-    const isProjects = pathname.startsWith('/projects');
-
-    const basePos = { x: 2.8, y: 0.25, z: -1.6 };
-    if (isHome && !isSmallScreen) {
-      basePos.x = 3.85;
-      basePos.y = 0.35;
-      basePos.z = -2.8;
-    } else if (isServices && !isSmallScreen) {
-      basePos.x = 2.9;
-      basePos.y = 0.85;
-      basePos.z = -1.6;
-    } else if (isProjects && !isSmallScreen) {
-      basePos.x = 3.6;
-      basePos.y = 0.65;
-      basePos.z = -2.2;
-    }
-    mainGroup.position.set(basePos.x, basePos.y, basePos.z);
+    const currentBasePos = { ...targetBasePosRef.current };
+    mainGroup.position.set(currentBasePos.x, currentBasePos.y, currentBasePos.z);
     scene.add(mainGroup);
 
     // 1. Outer Faceted Wireframe Icosahedron
-    const icoRadius = isHome ? 3.2 : 2.6;
+    const icoRadius = 3.0;
     const icoGeo = new THREE.IcosahedronGeometry(icoRadius, 1);
     const icoMat = new THREE.MeshStandardMaterial({
       color: 0xc084fc,
       emissive: 0x7c3aed,
-      emissiveIntensity: 0.85,
+      emissiveIntensity: 0.45,
       wireframe: true,
       transparent: true,
-      opacity: isSmallScreen ? 0.35 : 0.65,
+      opacity: isSmallScreen ? 0.20 : 0.32,
     });
     const icosahedron = new THREE.Mesh(icoGeo, icoMat);
     mainGroup.add(icosahedron);
@@ -99,9 +108,9 @@ export default function ThreeCanvas() {
     // 2. Outer Vertex Glow Points
     const icoPointsMat = new THREE.PointsMaterial({
       color: 0x22d3ee,
-      size: isSmallScreen ? 0.095 : 0.14,
+      size: isSmallScreen ? 0.075 : 0.095,
       transparent: true,
-      opacity: 0.95,
+      opacity: 0.55,
     });
     const icoVertexPoints = new THREE.Points(icoGeo, icoPointsMat);
     mainGroup.add(icoVertexPoints);
@@ -112,11 +121,11 @@ export default function ThreeCanvas() {
     const coreMat = new THREE.MeshPhysicalMaterial({
       color: 0x0d0e17,
       emissive: 0x8b5cf6,
-      emissiveIntensity: 0.65,
-      roughness: 0.12,
-      metalness: 0.9,
+      emissiveIntensity: 0.40,
+      roughness: 0.2,
+      metalness: 0.85,
       transparent: true,
-      opacity: isSmallScreen ? 0.38 : 0.65,
+      opacity: isSmallScreen ? 0.24 : 0.38,
       flatShading: true,
     });
     const coreMesh = new THREE.Mesh(coreGeo, coreMat);
@@ -129,17 +138,17 @@ export default function ThreeCanvas() {
       color: 0x22d3ee,
       wireframe: true,
       transparent: true,
-      opacity: isSmallScreen ? 0.28 : 0.48,
+      opacity: isSmallScreen ? 0.16 : 0.28,
     });
     const torusKnot = new THREE.Mesh(knotGeo, knotMat);
     mainGroup.add(torusKnot);
 
-    // 5. Gyroscopic Orbital Rings
+    // 5. Gyroscopic Orbital Rings — Elegant ambient background depth
     const torusGeo1 = new THREE.TorusGeometry(isHome ? 4.1 : 3.6, 0.038, 16, 128);
     const torusMat1 = new THREE.MeshBasicMaterial({
       color: 0x06b6d4,
       transparent: true,
-      opacity: isSmallScreen ? 0.45 : 0.72,
+      opacity: isSmallScreen ? 0.22 : 0.34,
     });
     const orbitalRing1 = new THREE.Mesh(torusGeo1, torusMat1);
     orbitalRing1.rotation.x = Math.PI * 0.38;
@@ -150,7 +159,7 @@ export default function ThreeCanvas() {
     const torusMat2 = new THREE.MeshBasicMaterial({
       color: 0xa855f7,
       transparent: true,
-      opacity: isSmallScreen ? 0.38 : 0.62,
+      opacity: isSmallScreen ? 0.20 : 0.30,
     });
     const orbitalRing2 = new THREE.Mesh(torusGeo2, torusMat2);
     orbitalRing2.rotation.x = -Math.PI * 0.32;
@@ -161,7 +170,7 @@ export default function ThreeCanvas() {
     const torusMat3 = new THREE.MeshBasicMaterial({
       color: 0x4f46e5,
       transparent: true,
-      opacity: isSmallScreen ? 0.25 : 0.45,
+      opacity: isSmallScreen ? 0.16 : 0.24,
     });
     const orbitalRing3 = new THREE.Mesh(torusGeo3, torusMat3);
     orbitalRing3.rotation.x = Math.PI * 0.48;
@@ -193,10 +202,10 @@ export default function ThreeCanvas() {
       const mat = new THREE.MeshStandardMaterial({
         color: idx % 2 === 0 ? 0x22d3ee : 0xc084fc,
         emissive: idx % 2 === 0 ? 0x06b6d4 : 0x7c3aed,
-        emissiveIntensity: 0.75,
+        emissiveIntensity: 0.40,
         wireframe: true,
         transparent: true,
-        opacity: isSmallScreen ? 0.38 : 0.65,
+        opacity: isSmallScreen ? 0.18 : 0.28,
       });
       const mesh = new THREE.Mesh(satGeos[idx % satGeos.length], mat);
       mesh.position.set(pos[0], pos[1], pos[2]);
@@ -357,40 +366,32 @@ export default function ThreeCanvas() {
         sat.position.z += vel * 0.05 * (i % 2 === 0 ? 1 : -1);
       });
 
-      const scrollWaveX = Math.sin(smoothScroll * Math.PI) * (isSmallScreen ? 0.4 : -2.0);
-      mainGroup.rotation.y = currentMouseX * 0.45 + smoothScroll * 0.48;
-      mainGroup.rotation.x = -currentMouseY * 0.35 + vel * 0.18;
-      mainGroup.position.x = basePos.x + scrollWaveX + currentMouseX * 0.35;
-      mainGroup.position.y = basePos.y + Math.sin(elapsed * 0.9) * 0.28 - smoothScroll * 1.1 - currentMouseY * 0.25;
-      mainGroup.position.z = basePos.z + Math.cos(elapsed * 0.7) * 0.25 + smoothScroll * 1.2;
+      const target = targetBasePosRef.current;
+      currentBasePos.x += (target.x - currentBasePos.x) * 0.05;
+      currentBasePos.y += (target.y - currentBasePos.y) * 0.05;
+      currentBasePos.z += (target.z - currentBasePos.z) * 0.05;
 
-      const velBoost = 1 + Math.abs(vel) * 2.5;
-      for (let i = 0; i < particleCount; i++) {
-        const i3 = i * 3;
-        pPositions[i3] += velocities[i3] * velBoost;
-        pPositions[i3 + 1] += velocities[i3 + 1] * velBoost;
-        pPositions[i3 + 2] += velocities[i3 + 2] * velBoost;
+      const scrollWaveX = Math.sin(smoothScroll * Math.PI) * (isSmallScreen ? 0.15 : 0.25);
+      mainGroup.rotation.y = currentMouseX * 0.35 + smoothScroll * 0.38;
+      mainGroup.rotation.x = -currentMouseY * 0.25 + vel * 0.14;
+      mainGroup.position.x = currentBasePos.x + scrollWaveX + currentMouseX * 0.25;
+      mainGroup.position.y = currentBasePos.y + Math.sin(elapsed * 0.9) * 0.22 - smoothScroll * 0.7 - currentMouseY * 0.2;
+      mainGroup.position.z = currentBasePos.z + Math.cos(elapsed * 0.7) * 0.2 - smoothScroll * 0.8;
 
-        if (pPositions[i3 + 2] > 7.5) {
-          pPositions[i3 + 2] = -18;
-          pPositions[i3] = (Math.random() - 0.5) * 38;
-          pPositions[i3 + 1] = (Math.random() - 0.5) * 32;
-        }
-        if (pPositions[i3 + 1] > 18) {
-          pPositions[i3 + 1] = -18;
-        }
-      }
-      particlesGeo.attributes.position.needsUpdate = true;
+      // High-performance GPU-only particle motion without CPU memory uploads
+      particleSystem.rotation.y = elapsed * 0.035 + smoothScroll * 0.25 + vel * 0.15;
+      particleSystem.rotation.x = elapsed * 0.018 - smoothScroll * 0.12;
+      particleSystem.position.y = Math.sin(elapsed * 0.6) * 0.25 - smoothScroll * 0.8;
 
-      const scrollFlightZ = 11.5 - Math.sin(smoothScroll * Math.PI) * 2.2 + Math.abs(vel) * 0.35;
-      const scrollFlightY = (smoothScroll - 0.5) * -1.2;
-      const scrollFlightX = Math.sin(smoothScroll * Math.PI * 2) * 0.5;
+      const scrollFlightZ = 11.5 + smoothScroll * 0.6 + Math.abs(vel) * 0.2;
+      const scrollFlightY = (smoothScroll - 0.5) * -1.0;
+      const scrollFlightX = Math.sin(smoothScroll * Math.PI * 2) * 0.3;
 
       camera.position.z = scrollFlightZ;
-      camera.position.y = scrollFlightY - currentMouseY * 0.25;
-      camera.position.x = scrollFlightX + currentMouseX * 0.35;
-      camera.rotation.x = -vel * 0.05 + currentMouseY * -0.035;
-      camera.rotation.y = (smoothScroll - 0.5) * 0.14 + currentMouseX * -0.035;
+      camera.position.y = scrollFlightY - currentMouseY * 0.2;
+      camera.position.x = scrollFlightX + currentMouseX * 0.25;
+      camera.rotation.x = -vel * 0.04 + currentMouseY * -0.025;
+      camera.rotation.y = (smoothScroll - 0.5) * 0.10 + currentMouseX * -0.025;
 
       renderer.render(scene, camera);
     };
@@ -467,13 +468,13 @@ export default function ThreeCanvas() {
       satGeos.forEach((g) => g.dispose());
       renderer.dispose();
     };
-  }, [pathname]);
+  }, []);
 
   return (
     <canvas
       ref={canvasRef}
       id="webgl-canvas"
-      className="fixed inset-0 pointer-events-none z-[-1] w-full h-full"
+      className="fixed inset-0 pointer-events-none z-[1] w-full h-full"
       aria-hidden="true"
     />
   );

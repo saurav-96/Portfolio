@@ -15,10 +15,12 @@ function SearchParamsReader({
 }) {
   const searchParams = useSearchParams();
   useEffect(() => {
-    const f = searchParams.get('filter') || 'all';
-    const p = searchParams.get('project') || '';
-    onParams(f, p);
-  }, [searchParams, onParams]);
+    const f = searchParams.get('filter');
+    const p = searchParams.get('project');
+    if (f || p) {
+      onParams(f || '', p || '');
+    }
+  }, []);
   return null;
 }
 
@@ -648,5 +650,6 @@ export default function ProjectsClient() {
     </>
   );
 }
+
 
 

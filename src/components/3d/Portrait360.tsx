@@ -1,19 +1,14 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import { useEffect, useRef } from 'react';
 
 const TOTAL_FRAMES = 36;
 const DEGREES_PER_FRAME = 360 / TOTAL_FRAMES; // 10 deg per frame
 const FRAME_PATH = '/assets/images/portrait-360/frame-';
 const FRAME_EXT = '.png';
 
-// Physics & Interaction constants
-const DRAG_SENSITIVITY = 0.48; // Natural 1:1 turntable drag feel
-const INERTIA_FRICTION = 0.92; // Smooth friction decay
-const MIN_VELOCITY = 0.02; // Inertia cutoff
-const MAX_FLING = 3.6; // Maximum flick velocity
-const IDLE_RETURN_DELAY_MS = 3500; // 3.5s inactivity before smooth return
+const DRAG_SENSITIVITY = 0.52;
+const ROTATION_STEP_DEG = 25; // Symmetrical rotation step for arrow buttons
 
 export default function Portrait360() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -21,237 +16,395 @@ export default function Portrait360() {
   const fallbackImgRef = useRef<HTMLImageElement | null>(null);
   const angleBadgeRef = useRef<HTMLSpanElement | null>(null);
 
-  const [angleText, setAngleText] = useState('0°');
-  const [isActivated, setIsActivated] = useState(false);
-
-  // Mutable refs to manage physics & render loops at 60/120fps without re-rendering React
+  // High-performance physics state stored in ref for 60/120fps tracking without React re-render overhead
   const stateRef = useRef({
-    images: new Array(TOTAL_FRAMES).fill(null) as (HTMLImageElement | null)[],
-    loaded: new Array(TOTAL_FRAMES).fill(false) as boolean[],
-    loadedCount: 0,
+    images: [] as (HTMLImageElement | null)[],
+    loaded: [] as boolean[],
     currentAngle: 0,
     targetAngle: 0,
     isDragging: false,
     hasActivated: false,
-    lastRenderedFrame: -1,
+    lastRenderedQuantized: -1,
     lastRoundedAngle: -1,
     lastPointerX: 0,
-    lastPointerTime: 0,
-    velocity: 0,
+    dragVelocity: 0,
     rafId: null as number | null,
-    idleReturnTimer: null as ReturnType<typeof setTimeout> | null,
+    idleTimer: null as number | null,
+
+    // Smooth return-to-original state
     isAutoReturning: false,
     returnStartAngle: 0,
     returnDeltaAngle: 0,
     returnStartTime: 0,
-    returnDuration: 800,
-    targetTiltX: 0,
-    targetTiltY: 0,
-    currentTiltX: 0,
-    currentTiltY: 0,
+    returnDuration: 680,
+
+    // Smooth arrow sliding animation state
+    isSliding: false,
+    slideStartAngle: 0,
+    slideTargetAngle: 0,
+    slideDeltaAngle: 0,
+    slideStartTime: 0,
+    slideDuration: 480,
   });
+
+  const cancelIdleTimer = () => {
+    const s = stateRef.current;
+    if (s.idleTimer) {
+      window.clearTimeout(s.idleTimer);
+      s.idleTimer = null;
+    }
+  };
+
+  const scheduleIdleTimer = () => {
+    cancelIdleTimer();
+    const s = stateRef.current;
+    const norm = ((s.currentAngle % 360) + 360) % 360;
+    if (norm >= 1.5 && norm <= 358.5) {
+      s.idleTimer = window.setTimeout(() => {
+        triggerSmoothReturn(750);
+      }, 3500);
+    }
+  };
+
+  const updateUI = (normAngle: number) => {
+    const s = stateRef.current;
+    const rounded = Math.round(normAngle);
+    if (s.lastRoundedAngle !== rounded) {
+      s.lastRoundedAngle = rounded;
+
+      // Compute symmetrical signed angle relative to 0° front view (-180° to +180°)
+      let signed = rounded;
+      if (signed > 180) signed -= 360;
+
+      if (angleBadgeRef.current) {
+        angleBadgeRef.current.textContent = `${signed}°`;
+      }
+      const orbitRing = document.querySelector('.neon-orbit-ring') as HTMLElement | null;
+      if (orbitRing) {
+        orbitRing.style.transform = `translateX(-50%) rotateX(72deg) rotateZ(${(signed * 0.4).toFixed(1)}deg)`;
+      }
+    }
+  };
+
+  const activate3D = () => {
+    const s = stateRef.current;
+    cancelIdleTimer();
+    if (!s.hasActivated) {
+      s.hasActivated = true;
+      const fallback = fallbackImgRef.current;
+      if (fallback) {
+        fallback.classList.remove('is-revealing');
+        void fallback.offsetWidth;
+        fallback.classList.add('is-hidden');
+      }
+    }
+  };
+
+  // Gentle soft-focus transition when original authentic portrait re-appears at true 0°
+  const restoreOriginalPicture = () => {
+    const s = stateRef.current;
+    const fallback = fallbackImgRef.current;
+    if (fallback) {
+      fallback.classList.remove('is-hidden');
+      fallback.classList.remove('is-revealing');
+      void fallback.offsetWidth;
+      fallback.classList.add('is-revealing');
+    }
+    s.hasActivated = false;
+    s.isAutoReturning = false;
+    s.isSliding = false;
+  };
+
+  // High-precision sub-frame optical cross-blending between adjacent 10° angular poses
+  const renderFrame = (angle: number, force = false) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    const s = stateRef.current;
+    const normAngle = ((angle % 360) + 360) % 360;
+
+    // Fractional frame position (e.g., 2.35)
+    const exactFrame = normAngle / DEGREES_PER_FRAME;
+    const frameIndexA = Math.floor(exactFrame) % TOTAL_FRAMES;
+    const frameIndexB = (frameIndexA + 1) % TOTAL_FRAMES;
+    const blendProgress = exactFrame - Math.floor(exactFrame);
+
+    // Quantize check to avoid redundant draws on static frames
+    const quantized = Math.round(exactFrame * 20) / 20;
+    if (!force && quantized === s.lastRenderedQuantized) {
+      updateUI(normAngle);
+      return;
+    }
+
+    let imgA = s.images[frameIndexA];
+    let imgB = s.images[frameIndexB];
+
+    // Fallbacks if frames are still loading
+    if (!imgA || !s.loaded[frameIndexA]) imgA = s.images[0] || null;
+    if (!imgB || !s.loaded[frameIndexB]) imgB = imgA;
+
+    if (imgA) {
+      ctx.clearRect(0, 0, 657, 1008);
+
+      if (!imgB || imgA === imgB || blendProgress < 0.02) {
+        ctx.globalAlpha = 1.0;
+        ctx.drawImage(imgA, 0, 0, 657, 1008);
+      } else if (blendProgress > 0.98) {
+        ctx.globalAlpha = 1.0;
+        ctx.drawImage(imgB, 0, 0, 657, 1008);
+      } else {
+        // Continuous, seamless sub-frame optical cross-blend for liquid-smooth rotation
+        ctx.globalAlpha = 1.0;
+        ctx.drawImage(imgA, 0, 0, 657, 1008);
+        ctx.globalAlpha = blendProgress;
+        ctx.drawImage(imgB, 0, 0, 657, 1008);
+        ctx.globalAlpha = 1.0;
+      }
+
+      s.lastRenderedQuantized = quantized;
+    }
+
+    updateUI(normAngle);
+  };
+
+  // Gentle and smooth spring-return to original pose (0°)
+  const triggerSmoothReturn = (duration = 680) => {
+    const s = stateRef.current;
+    if (s.isDragging) return;
+
+    cancelIdleTimer();
+    s.isSliding = false;
+
+    const norm = ((s.currentAngle % 360) + 360) % 360;
+    if (norm < 0.5 || norm > 359.5) {
+      s.currentAngle = 0;
+      s.targetAngle = 0;
+      s.isAutoReturning = false;
+      renderFrame(0, true);
+      restoreOriginalPicture();
+      return;
+    }
+
+    // Shortest circular path to 0°
+    let diff = 0 - norm;
+    if (diff < -180) diff += 360;
+    if (diff > 180) diff -= 360;
+
+    s.returnStartAngle = norm;
+    s.returnDeltaAngle = diff;
+    s.returnStartTime = performance.now();
+    s.returnDuration = Math.max(500, Math.min(820, Math.abs(diff) * 3.8));
+    s.isAutoReturning = true;
+    wakeLoop();
+  };
+
+  // Smooth continuous sliding animation when clicking arrow buttons
+  const slideByAngle = (delta: number, duration = 480) => {
+    activate3D();
+    const s = stateRef.current;
+    s.isAutoReturning = false;
+    cancelIdleTimer();
+
+    const baseTarget = s.isSliding ? s.slideTargetAngle : s.currentAngle;
+    s.slideStartAngle = s.currentAngle;
+    s.slideTargetAngle = baseTarget + delta;
+    s.slideDeltaAngle = s.slideTargetAngle - s.currentAngle;
+    s.slideStartTime = performance.now();
+    s.slideDuration = duration;
+    s.isSliding = true;
+    wakeLoop();
+  };
+
+  const tick = () => {
+    const s = stateRef.current;
+    const now = performance.now();
+    let keepLooping = false;
+
+    if (s.isDragging) {
+      let diff = s.targetAngle - s.currentAngle;
+      if (diff < -180) diff += 360;
+      if (diff > 180) diff -= 360;
+
+      // Natural interpolation: responsive tracking with subtle momentum filtering
+      if (Math.abs(diff) > 0.02) {
+        s.currentAngle = ((s.currentAngle + diff * 0.45) % 360 + 360) % 360;
+        renderFrame(s.currentAngle);
+        keepLooping = true;
+      } else {
+        s.currentAngle = s.targetAngle;
+        renderFrame(s.currentAngle);
+      }
+    } else if (s.isSliding) {
+      const elapsed = now - s.slideStartTime;
+      const progress = Math.min(1, elapsed / s.slideDuration);
+
+      // Silky cubic ease-out
+      const ease = 1 - Math.pow(1 - progress, 3);
+      s.currentAngle = s.slideStartAngle + s.slideDeltaAngle * ease;
+      s.targetAngle = s.currentAngle;
+      renderFrame(s.currentAngle);
+
+      if (progress >= 1) {
+        s.currentAngle = ((s.slideTargetAngle % 360) + 360) % 360;
+        s.targetAngle = s.currentAngle;
+        s.isSliding = false;
+        scheduleIdleTimer();
+      } else {
+        keepLooping = true;
+      }
+    } else if (s.isAutoReturning) {
+      const elapsed = now - s.returnStartTime;
+      const progress = Math.min(1, elapsed / s.returnDuration);
+
+      // Silky quartic ease-out for graceful zero-jerk arrival at 0°
+      const ease = 1 - Math.pow(1 - progress, 4);
+      s.currentAngle = ((s.returnStartAngle + s.returnDeltaAngle * ease) % 360 + 360) % 360;
+      s.targetAngle = s.currentAngle;
+      renderFrame(s.currentAngle);
+
+      if (progress >= 1) {
+        s.currentAngle = 0;
+        s.targetAngle = 0;
+        s.isAutoReturning = false;
+        renderFrame(0, true);
+        restoreOriginalPicture();
+      } else {
+        keepLooping = true;
+      }
+    }
+
+    if (keepLooping || s.isDragging || s.isSliding || s.isAutoReturning) {
+      s.rafId = requestAnimationFrame(tick);
+    } else {
+      s.rafId = null;
+    }
+  };
+
+  const wakeLoop = () => {
+    const s = stateRef.current;
+    if (!s.rafId) {
+      s.rafId = requestAnimationFrame(tick);
+    }
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest('button')) return;
+
+    cancelIdleTimer();
+    const s = stateRef.current;
+    s.isAutoReturning = false;
+    s.isSliding = false;
+    activate3D();
+    s.isDragging = true;
+    s.targetAngle = s.currentAngle;
+    s.lastPointerX = e.clientX;
+
+    if (containerRef.current) {
+      containerRef.current.classList.add('is-dragging');
+    }
+
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch (_) {}
+
+    wakeLoop();
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    const s = stateRef.current;
+    if (!s.isDragging) return;
+
+    const deltaX = e.clientX - s.lastPointerX;
+    s.lastPointerX = e.clientX;
+
+    if (deltaX !== 0) {
+      const angleDelta = -deltaX * DRAG_SENSITIVITY;
+      s.targetAngle = ((s.targetAngle + angleDelta) % 360 + 360) % 360;
+      wakeLoop();
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    const s = stateRef.current;
+    if (!s.isDragging) return;
+    s.isDragging = false;
+
+    if (containerRef.current) {
+      containerRef.current.classList.remove('is-dragging');
+    }
+
+    try {
+      if ((e.currentTarget as HTMLElement).hasPointerCapture(e.pointerId)) {
+        (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+      }
+    } catch (_) {}
+
+    // When released / undragged: gently spring-return to 0°
+    triggerSmoothReturn(680);
+  };
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    slideByAngle(-ROTATION_STEP_DEG, 480);
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    slideByAngle(ROTATION_STEP_DEG, 480);
+  };
+
+  const handleReset = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    cancelIdleTimer();
+    const s = stateRef.current;
+    const norm = ((s.currentAngle % 360) + 360) % 360;
+    if (norm >= 1.5 && norm <= 358.5) {
+      activate3D();
+      triggerSmoothReturn(600);
+    } else {
+      s.currentAngle = 0;
+      s.targetAngle = 0;
+      renderFrame(0, true);
+      restoreOriginalPicture();
+    }
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d', { alpha: true });
-    if (!ctx) return;
-
-    // High-DPI Canvas Setup matching saurav-cutout.png (657x1008)
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const logicalW = 657;
-    const logicalH = 1008;
+    canvas.width = 657 * dpr;
+    canvas.height = 1008 * dpr;
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (ctx) ctx.scale(dpr, dpr);
 
-    canvas.width = logicalW * dpr;
-    canvas.height = logicalH * dpr;
-    ctx.scale(dpr, dpr);
+    const s = stateRef.current;
+    s.images = new Array(TOTAL_FRAMES).fill(null);
+    s.loaded = new Array(TOTAL_FRAMES).fill(false);
 
-    const orbitRing = document.querySelector('.neon-orbit-ring') as HTMLElement | null;
+    // Eagerly preload Frame 0 first for instant pixel-perfect render
+    const frame0 = new Image();
+    frame0.src = `${FRAME_PATH}00${FRAME_EXT}`;
+    frame0.onload = () => {
+      s.images[0] = frame0;
+      s.loaded[0] = true;
+      renderFrame(0, true);
+    };
 
-    // Crisp single-frame rendering
-    function renderFrame(angle: number, force = false) {
-      const normAngle = ((angle % 360) + 360) % 360;
-      const frameIndex = Math.round(normAngle / DEGREES_PER_FRAME) % TOTAL_FRAMES;
-
-      if (!force && frameIndex === stateRef.current.lastRenderedFrame) {
-        updateUI(normAngle);
-        return;
-      }
-
-      let img = stateRef.current.images[frameIndex];
-      if (!img || !stateRef.current.loaded[frameIndex]) {
-        for (let offset = 1; offset < TOTAL_FRAMES; offset++) {
-          const prev = (frameIndex - offset + TOTAL_FRAMES) % TOTAL_FRAMES;
-          if (stateRef.current.images[prev] && stateRef.current.loaded[prev]) {
-            img = stateRef.current.images[prev];
-            break;
-          }
-          const next = (frameIndex + offset) % TOTAL_FRAMES;
-          if (stateRef.current.images[next] && stateRef.current.loaded[next]) {
-            img = stateRef.current.images[next];
-            break;
-          }
-        }
-      }
-
-      if (img && ctx) {
-        ctx.clearRect(0, 0, logicalW, logicalH);
-        ctx.drawImage(img, 0, 0, logicalW, logicalH);
-        stateRef.current.lastRenderedFrame = frameIndex;
-      }
-
-      updateUI(normAngle);
-    }
-
-    function updateUI(normAngle: number) {
-      const roundedAngle = Math.round(normAngle);
-      if (stateRef.current.lastRoundedAngle !== roundedAngle) {
-        stateRef.current.lastRoundedAngle = roundedAngle;
-        if (angleBadgeRef.current) {
-          angleBadgeRef.current.textContent = `${roundedAngle}°`;
-        }
-        if (orbitRing) {
-          const ringRot = (normAngle * 0.4).toFixed(1);
-          orbitRing.style.transform = `translateX(-50%) rotateX(72deg) rotateZ(${ringRot}deg)`;
-        }
-      }
-    }
-
-    function cancelIdleReturn() {
-      if (stateRef.current.idleReturnTimer) {
-        clearTimeout(stateRef.current.idleReturnTimer);
-        stateRef.current.idleReturnTimer = null;
-      }
-      stateRef.current.isAutoReturning = false;
-    }
-
-    function restoreOriginalPicture() {
-      const fallbackImg = fallbackImgRef.current;
-      if (fallbackImg) {
-        fallbackImg.style.display = 'block';
-        void fallbackImg.offsetWidth;
-        fallbackImg.style.transition = 'opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
-        fallbackImg.style.opacity = '1';
-      }
-      stateRef.current.hasActivated = false;
-      stateRef.current.isAutoReturning = false;
-      setIsActivated(false);
-    }
-
-    function triggerSmoothReturn(duration = 800) {
-      if (stateRef.current.isDragging) return;
-
-      const norm = ((stateRef.current.currentAngle % 360) + 360) % 360;
-      if (norm < 1.0 || norm > 359.0) {
-        stateRef.current.currentAngle = 0;
-        stateRef.current.targetAngle = 0;
-        renderFrame(0, true);
-        restoreOriginalPicture();
-        return;
-      }
-
-      let diff = 0 - norm;
-      if (diff < -180) diff += 360;
-      if (diff > 180) diff -= 360;
-
-      stateRef.current.returnStartAngle = norm;
-      stateRef.current.returnDeltaAngle = diff;
-      stateRef.current.returnStartTime = performance.now();
-      stateRef.current.returnDuration = Math.max(550, Math.min(950, duration || Math.abs(diff) * 3.8));
-      stateRef.current.isAutoReturning = true;
-      stateRef.current.velocity = 0;
-      wakeLoop();
-    }
-
-    function scheduleIdleReturn() {
-      cancelIdleReturn();
-      const norm = ((stateRef.current.currentAngle % 360) + 360) % 360;
-      if (norm >= 1.5 && norm <= 358.5) {
-        stateRef.current.idleReturnTimer = setTimeout(() => {
-          triggerSmoothReturn(850);
-        }, IDLE_RETURN_DELAY_MS);
-      }
-    }
-
-    function tick() {
-      stateRef.current.currentTiltX += (stateRef.current.targetTiltX - stateRef.current.currentTiltX) * 0.12;
-      stateRef.current.currentTiltY += (stateRef.current.targetTiltY - stateRef.current.currentTiltY) * 0.12;
-      if (canvas) {
-        canvas.style.transform = `perspective(1200px) rotateX(${stateRef.current.currentTiltX.toFixed(2)}deg) rotateY(${stateRef.current.currentTiltY.toFixed(2)}deg)`;
-      }
-
-      let keepLooping = false;
-
-      if (stateRef.current.isDragging) {
-        let diff = stateRef.current.targetAngle - stateRef.current.currentAngle;
-        if (diff < -180) diff += 360;
-        if (diff > 180) diff -= 360;
-
-        stateRef.current.currentAngle = (((stateRef.current.currentAngle + diff * 0.85) % 360) + 360) % 360;
-        renderFrame(stateRef.current.currentAngle);
-        keepLooping = true;
-      } else if (stateRef.current.isAutoReturning) {
-        const now = performance.now();
-        const elapsed = now - stateRef.current.returnStartTime;
-        const progress = Math.min(1, elapsed / stateRef.current.returnDuration);
-        const ease = 1 - Math.pow(1 - progress, 3);
-        stateRef.current.currentAngle = (((stateRef.current.returnStartAngle + stateRef.current.returnDeltaAngle * ease) % 360) + 360) % 360;
-        stateRef.current.targetAngle = stateRef.current.currentAngle;
-        renderFrame(stateRef.current.currentAngle);
-
-        if (progress >= 1) {
-          stateRef.current.currentAngle = 0;
-          stateRef.current.targetAngle = 0;
-          renderFrame(0, true);
-          restoreOriginalPicture();
-        } else {
-          keepLooping = true;
-        }
-      } else if (Math.abs(stateRef.current.velocity) > MIN_VELOCITY) {
-        stateRef.current.currentAngle = (((stateRef.current.currentAngle + stateRef.current.velocity) % 360) + 360) % 360;
-        stateRef.current.targetAngle = stateRef.current.currentAngle;
-        stateRef.current.velocity *= INERTIA_FRICTION;
-        renderFrame(stateRef.current.currentAngle);
-        keepLooping = true;
-      } else if (stateRef.current.velocity !== 0) {
-        stateRef.current.velocity = 0;
-        stateRef.current.targetAngle = stateRef.current.currentAngle;
-        scheduleIdleReturn();
-      }
-
-      if (
-        Math.abs(stateRef.current.targetTiltX - stateRef.current.currentTiltX) > 0.05 ||
-        Math.abs(stateRef.current.targetTiltY - stateRef.current.currentTiltY) > 0.05
-      ) {
-        keepLooping = true;
-      }
-
-      if (keepLooping || stateRef.current.isDragging) {
-        stateRef.current.rafId = requestAnimationFrame(tick);
-      } else {
-        stateRef.current.rafId = null;
-      }
-    }
-
-    function wakeLoop() {
-      if (!stateRef.current.rafId) {
-        stateRef.current.rafId = requestAnimationFrame(tick);
-      }
-    }
-
-    // Parallel preloading of 36 frames
-    for (let i = 0; i < TOTAL_FRAMES; i++) {
-      const img = new window.Image();
+    // Preload remaining frames in background
+    for (let i = 1; i < TOTAL_FRAMES; i++) {
+      const img = new Image();
       const pad = i.toString().padStart(2, '0');
       img.src = `${FRAME_PATH}${pad}${FRAME_EXT}`;
       img.onload = () => {
-        stateRef.current.images[i] = img;
-        stateRef.current.loaded[i] = true;
-        stateRef.current.loadedCount++;
-        const currentFrame = Math.round((((stateRef.current.currentAngle % 360) + 360) % 360) / DEGREES_PER_FRAME) % TOTAL_FRAMES;
-        if (i === currentFrame && stateRef.current.hasActivated) {
-          renderFrame(stateRef.current.currentAngle, true);
+        s.images[i] = img;
+        s.loaded[i] = true;
+        const currentFrame = Math.round(((s.currentAngle % 360) + 360) % 360 / DEGREES_PER_FRAME) % TOTAL_FRAMES;
+        if (i === currentFrame && s.hasActivated) {
+          renderFrame(s.currentAngle, true);
         }
       };
       if ('decode' in img) {
@@ -259,257 +412,113 @@ export default function Portrait360() {
       }
     }
 
-    // Attach external controls trigger functions to refs
-    if (containerRef.current) {
-      (containerRef.current as any).__activate3D = () => {
-        cancelIdleReturn();
-        if (!stateRef.current.hasActivated) {
-          stateRef.current.hasActivated = true;
-          setIsActivated(true);
-          const fallbackImg = fallbackImgRef.current;
-          if (fallbackImg) {
-            fallbackImg.style.transition = 'opacity 0.25s ease';
-            fallbackImg.style.opacity = '0';
-            setTimeout(() => {
-              if (stateRef.current.hasActivated && fallbackImg) {
-                fallbackImg.style.display = 'none';
-              }
-            }, 270);
-          }
-        }
-      };
-
-      (containerRef.current as any).__triggerSmoothReturn = triggerSmoothReturn;
-      (containerRef.current as any).__wakeLoop = wakeLoop;
-      (containerRef.current as any).__cancelIdleReturn = cancelIdleReturn;
-      (containerRef.current as any).__scheduleIdleReturn = scheduleIdleReturn;
-    }
-
     return () => {
-      cancelIdleReturn();
-      if (stateRef.current.rafId) cancelAnimationFrame(stateRef.current.rafId);
+      if (s.rafId) cancelAnimationFrame(s.rafId);
+      if (s.idleTimer) window.clearTimeout(s.idleTimer);
     };
   }, []);
-
-  const activate3D = () => {
-    const fn = (containerRef.current as any)?.__activate3D;
-    if (typeof fn === 'function') fn();
-  };
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    if ((e.target as HTMLElement).closest('button')) return;
-
-    const cancelIdle = (containerRef.current as any)?.__cancelIdleReturn;
-    if (typeof cancelIdle === 'function') cancelIdle();
-
-    activate3D();
-    stateRef.current.isDragging = true;
-    stateRef.current.targetAngle = stateRef.current.currentAngle;
-    stateRef.current.lastPointerX = e.clientX;
-    stateRef.current.lastPointerTime = performance.now();
-    stateRef.current.velocity = 0;
-
-    containerRef.current?.classList.add('is-dragging');
-    if (canvasRef.current && (canvasRef.current as any).setPointerCapture) {
-      try {
-        canvasRef.current.setPointerCapture(e.pointerId);
-      } catch (_) {}
-    }
-
-    const wake = (containerRef.current as any)?.__wakeLoop;
-    if (typeof wake === 'function') wake();
-  };
-
-  const onPointerMove = (e: React.PointerEvent) => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const rect = container.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const normX = Math.max(-1, Math.min(1, (e.clientX - centerX) / (rect.width / 2)));
-    const normY = Math.max(-1, Math.min(1, (e.clientY - centerY) / (rect.height / 2)));
-
-    stateRef.current.targetTiltY = normX * 8.0;
-    stateRef.current.targetTiltX = -normY * 6.0;
-
-    const wake = (container as any)?.__wakeLoop;
-    if (typeof wake === 'function') wake();
-
-    if (!stateRef.current.isDragging) return;
-
-    const cancelIdle = (container as any)?.__cancelIdleReturn;
-    if (typeof cancelIdle === 'function') cancelIdle();
-
-    const now = performance.now();
-    const dt = Math.max(1, now - stateRef.current.lastPointerTime);
-    const deltaX = e.clientX - stateRef.current.lastPointerX;
-
-    const angleDelta = -deltaX * DRAG_SENSITIVITY;
-    stateRef.current.targetAngle = (((stateRef.current.targetAngle + angleDelta) % 360) + 360) % 360;
-
-    const rawVel = (angleDelta / dt) * 16.6;
-    stateRef.current.velocity = stateRef.current.velocity * 0.2 + rawVel * 0.8;
-
-    stateRef.current.lastPointerX = e.clientX;
-    stateRef.current.lastPointerTime = now;
-  };
-
-  const onPointerUp = (e: React.PointerEvent) => {
-    if (!stateRef.current.isDragging) return;
-    stateRef.current.isDragging = false;
-    stateRef.current.targetAngle = stateRef.current.currentAngle;
-    containerRef.current?.classList.remove('is-dragging');
-
-    if (canvasRef.current && (canvasRef.current as any).releasePointerCapture) {
-      try {
-        canvasRef.current.releasePointerCapture(e.pointerId);
-      } catch (_) {}
-    }
-
-    stateRef.current.velocity = Math.max(-MAX_FLING, Math.min(MAX_FLING, stateRef.current.velocity));
-
-    const schedule = (containerRef.current as any)?.__scheduleIdleReturn;
-    if (typeof schedule === 'function') schedule();
-
-    const wake = (containerRef.current as any)?.__wakeLoop;
-    if (typeof wake === 'function') wake();
-  };
-
-  const onPointerLeave = () => {
-    if (!stateRef.current.isDragging) {
-      stateRef.current.targetTiltX = 0;
-      stateRef.current.targetTiltY = 0;
-      const wake = (containerRef.current as any)?.__wakeLoop;
-      if (typeof wake === 'function') wake();
-    }
-  };
-
-  const handleRotateLeft = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const cancelIdle = (containerRef.current as any)?.__cancelIdleReturn;
-    if (typeof cancelIdle === 'function') cancelIdle();
-    activate3D();
-    stateRef.current.targetAngle = stateRef.current.currentAngle;
-    stateRef.current.velocity = -1.8;
-    const schedule = (containerRef.current as any)?.__scheduleIdleReturn;
-    if (typeof schedule === 'function') schedule();
-    const wake = (containerRef.current as any)?.__wakeLoop;
-    if (typeof wake === 'function') wake();
-  };
-
-  const handleRotateRight = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const cancelIdle = (containerRef.current as any)?.__cancelIdleReturn;
-    if (typeof cancelIdle === 'function') cancelIdle();
-    activate3D();
-    stateRef.current.targetAngle = stateRef.current.currentAngle;
-    stateRef.current.velocity = 1.8;
-    const schedule = (containerRef.current as any)?.__scheduleIdleReturn;
-    if (typeof schedule === 'function') schedule();
-    const wake = (containerRef.current as any)?.__wakeLoop;
-    if (typeof wake === 'function') wake();
-  };
-
-  const handleReset = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const cancelIdle = (containerRef.current as any)?.__cancelIdleReturn;
-    if (typeof cancelIdle === 'function') cancelIdle();
-    activate3D();
-    stateRef.current.targetAngle = stateRef.current.currentAngle;
-    const smoothReturn = (containerRef.current as any)?.__triggerSmoothReturn;
-    if (typeof smoothReturn === 'function') smoothReturn(550);
-  };
 
   return (
     <div
       ref={containerRef}
       id="hero-portrait-360"
-      className="portrait-turntable-360"
+      className="portrait-turntable-360 select-none cursor-grab active:cursor-grabbing relative flex flex-col items-center justify-center w-full max-w-[535px]"
       role="region"
-      aria-label="Interactive 3D rotating portrait of Saurav Bhusal. Drag horizontally to rotate in 3D."
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
-      onPointerLeave={onPointerLeave}
+      aria-label="Interactive 3D rotating portrait of Saurav Bhusal. Drag horizontally to rotate; release to gently spring back to original pose."
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
     >
-      {/* High-DPI 3D Turntable Canvas with Smooth Sub-Frame Blending */}
-      <canvas
-        ref={canvasRef}
-        id="portrait-360-canvas"
-        className="portrait-360-canvas"
-        width={657}
-        height={1008}
-      />
+      {/* Dedicated Visual Media Stage — Shared 657:1008 Aspect Ratio Coordinate Plane */}
+      <div className="portrait-media-stage relative w-full aspect-[657/1008] max-h-[580px] flex items-center justify-center overflow-visible">
+        {/* High-DPI 3D Turntable Canvas with Continuous Sub-Frame Optical Blending */}
+        <canvas
+          ref={canvasRef}
+          id="portrait-360-canvas"
+          className="portrait-360-canvas absolute inset-0 w-full h-full object-contain pointer-events-none"
+          width={657}
+          height={1008}
+        />
 
-      {/* Authentic Original Hero Portrait as Initial Thumbnail */}
-      <img
-        ref={fallbackImgRef}
-        id="portrait-static-img"
-        src="/assets/images/saurav-cutout.png"
-        alt="Saurav Bhusal — Creative Web Developer and UI/UX Designer"
-        className="portrait-img portrait-fallback-img"
-        width={440}
-        height={495}
-        loading="eager"
-      />
-
-      {/* Floating 3D Interactive Badge */}
-      <div id="portrait-360-badge" className="portrait-360-badge" aria-live="polite">
-        <span className="badge-icon-spin" aria-hidden="true">
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-            <path d="M2 12h20" />
-          </svg>
-        </span>
-        <span className="badge-label">3D Interactive</span>
-        <span className="badge-separator">•</span>
-        <span className="badge-instruction">Drag to Rotate</span>
-        <span ref={angleBadgeRef} id="portrait-360-angle" className="badge-angle">
-          {angleText}
-        </span>
+        {/* Initial SSR Fallback Image — Exactly Matches Canvas 657x1008 Coordinates */}
+        <img
+          ref={fallbackImgRef}
+          src="/assets/images/saurav-cutout.png"
+          alt="Saurav Bhusal — Creative Web Developer and UI/UX Designer"
+          className="portrait-fallback-img is-revealing absolute inset-0 w-full h-full object-contain pointer-events-none"
+          id="portrait-static-img"
+          width={657}
+          height={1008}
+          loading="eager"
+        />
       </div>
 
-      {/* Sleek Interaction Controls */}
-      <div className="portrait-360-controls" aria-label="3D view controls">
-        <button
-          type="button"
-          id="portrait-btn-prev"
-          className="portrait-spin-btn btn-spin-left"
-          onClick={handleRotateLeft}
-          aria-label="Rotate Left"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-          <span className="text-[10px]">Left</span>
-        </button>
-        <button
-          type="button"
-          id="portrait-btn-reset"
-          className="portrait-spin-btn btn-spin-reset"
-          onClick={handleReset}
-          aria-label="Reset to Front View"
-        >
-          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          <span className="text-[10px] font-mono tracking-wider">RESET</span>
-        </button>
-        <button
-          type="button"
-          id="portrait-btn-next"
-          className="portrait-spin-btn btn-spin-right"
-          onClick={handleRotateRight}
-          aria-label="Rotate Right"
-        >
-          <span className="text-[10px]">Right</span>
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+      {/* Sleek Unified 3D Floating Control Bar */}
+      <div
+        className="portrait-360-unified-bar font-sans mt-[-8px] relative z-10"
+        id="portrait-360-badge"
+        aria-live="polite"
+      >
+        <div className="flex items-center gap-2">
+          <span className="badge-icon-spin text-cyan-400" aria-hidden="true">
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+              <path d="M2 12h20" />
+            </svg>
+          </span>
+          <span className="font-semibold text-white text-[12px] tracking-tight">3D Interactive</span>
+          <span className="text-slate-500">•</span>
+          <span className="text-slate-300 text-[11px] font-medium">Drag to Rotate</span>
+        </div>
+
+        <div className="flex items-center gap-1.5 pl-2.5 border-l border-white/10">
+          <button
+            type="button"
+            className="portrait-nav-btn active:scale-90 transition-transform"
+            id="portrait-btn-prev"
+            aria-label="Rotate Left Smoothly"
+            onClick={handlePrev}
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <span
+            ref={angleBadgeRef}
+            className="badge-angle-pill font-sans text-cyan-400 font-bold text-[11px] min-w-[32px] text-center"
+            id="portrait-360-angle"
+          >
+            0°
+          </span>
+
+          <button
+            type="button"
+            className="portrait-nav-btn active:scale-90 transition-transform"
+            id="portrait-btn-next"
+            aria-label="Rotate Right Smoothly"
+            onClick={handleNext}
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            className="portrait-reset-btn group active:scale-95 transition-all"
+            id="portrait-btn-reset"
+            aria-label="Reset to Front View"
+            onClick={handleReset}
+          >
+            <svg className="w-3 h-3 text-cyan-400 group-hover:-rotate-45 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span className="text-[11px] font-medium font-sans">Reset</span>
+          </button>
+        </div>
       </div>
     </div>
   );

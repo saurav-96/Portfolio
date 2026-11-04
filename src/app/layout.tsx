@@ -8,6 +8,7 @@ import ThreeCanvas from '@/components/3d/ThreeCanvas';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Preloader from '@/components/layout/Preloader';
+import NavigationProgress from '@/components/layout/NavigationProgress';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -68,6 +69,9 @@ export default function RootLayout({
           Skip to main content
         </a>
 
+        {/* Instant Navigation Progress Indicator */}
+        <NavigationProgress />
+
         {/* Global Loading Orchestrator Curtain */}
         <Preloader />
 
@@ -77,12 +81,18 @@ export default function RootLayout({
         {/* Fixed Full-Viewport Three.js WebGL Simulation Canvas */}
         <ThreeCanvas />
 
+        {/* Atmospheric Floating Aurora Orbs & Animated Cyber Grid */}
+        <div className="ambient-backdrop" aria-hidden="true" />
+        <div className="bg-grid-overlay" aria-hidden="true" />
+
         {/* Smooth Scroll & GSAP ScrollTrigger Motion Context */}
         <SmoothScroll>
-          <Navbar />
-          <div className="relative z-10 flex flex-col min-h-screen">
-            {children}
-            <Footer />
+          <div className="site-wrapper">
+            <Navbar />
+            <div className="relative z-10 flex flex-col min-h-screen">
+              {children}
+              <Footer />
+            </div>
           </div>
         </SmoothScroll>
       </body>

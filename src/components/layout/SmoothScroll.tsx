@@ -13,21 +13,20 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Check prefers-reduced-motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
-
     const lenis = new Lenis({
-      duration: 1.15,
+      duration: 1.05,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
+      wheelMultiplier: 0.95,
+      syncTouch: false,
+      touchMultiplier: 1.0,
+      respectReducedMotion: false,
     });
 
     lenisRef.current = lenis;
+    (window as any).portfolioLenis = lenis;
 
     // Connect Lenis to ScrollTrigger
     lenis.on('scroll', ScrollTrigger.update);
@@ -43,6 +42,9 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
       gsap.ticker.remove(tickerCallback);
       lenis.destroy();
       lenisRef.current = null;
+      if ((window as any).portfolioLenis === lenis) {
+        delete (window as any).portfolioLenis;
+      }
     };
   }, []);
 

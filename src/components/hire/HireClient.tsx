@@ -116,7 +116,7 @@ export default function HireClient() {
           >
             <div>
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/35 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-emerald-500/25 transition duration-300">
                   <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24zm4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.49-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.03 2.61c.13.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.23-.17-.48-.29z"/>
                   </svg>
@@ -148,9 +148,9 @@ export default function HireClient() {
           >
             <div>
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/35 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-emerald-500/25 transition duration-300">
                   <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M18.561 13.158c-1.102 0-2.135-.467-3.074-1.227l.228-1.076.008-.042c.207-1.143.849-3.06 2.839-3.06 1.492 0 2.703 1.212 2.703 2.703-.001 1.489-1.212 2.702-2.704 2.702zm0-8.14c-3.715 0-5.834 2.651-6.496 4.606-1.579-2.383-2.614-5.06-2.614-5.06L6.59 4.564l-2.039 9.35-2.039-9.35H0l3.633 14.872h2.957l1.79-8.196c1.168 1.986 2.893 4.35 5.578 4.35 1.577 0 3.013-.67 4.072-1.74 1.056 1.07 2.492 1.74 4.07 1.74 3.328 0 6.035-2.707 6.035-6.035 0-3.327-2.707-6.035-6.035-6.035z"/>
+                    <path d="M18.561 13.158c-1.102 0-2.135-.467-3.074-1.227l.228-1.076.008-.042c.207-1.143.849-3.06 2.839-3.06 1.492 0 2.703 1.212 2.703 2.703-.001 1.489-1.212 2.702-2.704 2.702zm0-8.14c-2.539 0-4.51 1.649-5.31 4.366-1.22-1.834-2.148-4.036-2.687-5.892H7.828v7.112c-.002 1.406-1.141 2.546-2.547 2.548-1.405-.002-2.543-1.143-2.545-2.548V3.492H0v7.112c0 2.914 2.37 5.303 5.281 5.303c2.913 0 5.283-2.389 5.283-5.303v-1.19c.529 1.107 1.182 2.229 1.974 3.221l-1.673 7.873h2.797l1.213-5.71c1.063.679 2.285 1.109 3.686 1.109 3 0 5.439-2.452 5.439-5.45 0-3-2.439-5.439-5.439-5.439z" />
                   </svg>
                 </div>
                 <span className="tech-pill text-emerald-300 border-emerald-500/40">Escrow Protected</span>
@@ -180,9 +180,10 @@ export default function HireClient() {
           >
             <div>
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
-                  <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M23.003 12.001c0 6.076-4.926 11.002-11.002 11.002S1 18.077 1 12.001 5.926.999 12.001.999s11.002 4.926 11.002 11.002zM12 4.22c-4.298 0-7.781 3.483-7.781 7.781s3.483 7.781 7.781 7.781 7.781-3.483 7.781-7.781S16.298 4.22 12 4.22zm2.14 8.78h-2.14v3.25H9.86V8.75h4.28v4.25z"/>
+                <div className="w-12 h-12 rounded-2xl bg-[#1DBF73]/15 border border-[#1DBF73]/35 text-[#1DBF73] flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-[#1DBF73]/25 transition duration-300">
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
+                    <path fill="currentColor" d="M9.8 16.5H8.3v-5.2H7V10h1.3V9.3c0-1.3.6-2.2 2-2.2h1.3v1.4h-.9c-.6 0-.8.3-.8.8v.7h1.7l-.2 1.4h-1.5v5.1zm3.6 0h-1.5V10h1.5v6.5zm-.8-7.7c-.5 0-.9-.4-.9-.9 0-.5.4-.9.9-.9.5 0 .9.4.9.9 0 .5-.4.9-.9.9zm4.2 7.7c-.5 0-1-.4-1-1 0-.5.5-1 1-1 .6 0 1 .5 1 1 0 .6-.4 1-1 1z" />
                   </svg>
                 </div>
                 <span className="tech-pill text-cyan-300 border-cyan-500/40">Fiverr &amp; Freelancer</span>
@@ -497,3 +498,4 @@ export default function HireClient() {
     </main>
   );
 }
+
