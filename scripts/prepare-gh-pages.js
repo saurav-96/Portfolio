@@ -37,6 +37,13 @@ if (basePath) {
           modified = true;
         }
 
+        // Also match relative "assets/ or 'assets/ in JS bundles
+        const unslashedRegex = new RegExp(`(["'\`])assets/`, 'g');
+        if (unslashedRegex.test(content)) {
+          content = content.replace(unslashedRegex, `$1${basePath}/assets/`);
+          modified = true;
+        }
+
         if (modified) {
           fs.writeFileSync(fullPath, content, 'utf8');
         }

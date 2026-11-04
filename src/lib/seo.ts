@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
+import { getAssetPath } from '@/lib/assets';
 
 export const SITE_CONFIG = {
   name: 'Saurav Bhusal',
   title: 'Saurav Bhusal — 3D Interactive Developer & UI/UX Design Portfolio',
   description:
     'High-craft 3D interactive developer and UI/UX design portfolio of Saurav Bhusal. Featuring WebGL Three.js experiences, modern React/Next.js engineering, GSAP animations, and human-centered design.',
-  url: 'https://owns.com.np',
-  ogImage: '/assets/images/saurav-portrait.jpg',
+  url: 'https://saurav-96.github.io/Portfolio',
+  ogImage: getAssetPath('/assets/images/saurav-portrait.jpg'),
   author: 'Saurav Bhusal',
   location: 'Kapilvastu & Butwal, Nepal',
   email: 'sauravbhusal369@gmail.com',
@@ -74,11 +75,11 @@ export function constructMetadata({
     },
     icons: {
       icon: [
-        { url: '/assets/icons/favicon.ico' },
-        { url: '/assets/icons/favicon.svg', type: 'image/svg+xml' },
-        { url: '/assets/icons/favicon.png', type: 'image/png' },
+        { url: getAssetPath('/assets/icons/favicon.ico') },
+        { url: getAssetPath('/assets/icons/favicon.svg'), type: 'image/svg+xml' },
+        { url: getAssetPath('/assets/icons/favicon.png'), type: 'image/png' },
       ],
-      apple: [{ url: '/assets/icons/favicon.png' }],
+      apple: [{ url: getAssetPath('/assets/icons/favicon.png') }],
     },
     robots: {
       index: !noIndex,
@@ -99,7 +100,7 @@ export function generatePersonJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: 'Saurav Bhusal',
-    url: 'https://owns.com.np',
+    url: 'https://saurav-96.github.io/Portfolio',
     image: 'https://owns.com.np/assets/images/saurav-portrait.jpg',
     jobTitle: 'Software & Web Developer, UI/UX Designer',
     address: {
@@ -140,7 +141,7 @@ export function generateWebSiteJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Saurav Bhusal Portfolio',
-    url: 'https://owns.com.np',
+    url: 'https://saurav-96.github.io/Portfolio',
     author: {
       '@type': 'Person',
       name: 'Saurav Bhusal',

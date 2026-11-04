@@ -1,3 +1,5 @@
+import { getAssetPath } from '@/lib/assets';
+
 export interface ProjectCaseStudy {
   id: string;
   number: string;
@@ -34,7 +36,7 @@ export const PROJECT_CASE_STUDIES = {
       filterGroup: 'web',
       projectNature: 'Personal Web Application Prototype (Live Demo)',
       statusClass: 'status-live',
-      thumbnail: 'assets/projects/swasthyasutra-thumb.png',
+      thumbnail: getAssetPath('/assets/projects/swasthyasutra-thumb.png'),
       liveUrl: 'https://saurav-96.github.io/SwasthyaSutra/',
       githubUrl: 'https://github.com/saurav-96/SwasthyaSutra',
       overview:
@@ -62,7 +64,7 @@ export const PROJECT_CASE_STUDIES = {
       filterGroup: 'web',
       projectNature: 'Personal Web Application (Live Demo)',
       statusClass: 'status-live',
-      thumbnail: 'assets/projects/keyflow-thumb.png',
+      thumbnail: getAssetPath('/assets/projects/keyflow-thumb.png'),
       liveUrl: 'https://saurav-96.github.io/KeyFlow/',
       githubUrl: 'https://github.com/saurav-96/KeyFlow',
       overview:
@@ -90,7 +92,7 @@ export const PROJECT_CASE_STUDIES = {
       filterGroup: 'web',
       projectNature: 'Civic Tech Concept & Live Portal Prototype',
       statusClass: 'status-live',
-      thumbnail: 'assets/projects/egov-thumb.png',
+      thumbnail: getAssetPath('/assets/projects/egov-thumb.png'),
       liveUrl: 'https://saurav-96.github.io/E-Governmet-platform/',
       githubUrl: 'https://github.com/saurav-96/E-Governmet-platform',
       overview:
@@ -118,7 +120,7 @@ export const PROJECT_CASE_STUDIES = {
       filterGroup: 'web',
       projectNature: 'CS50x Final Project & Browser Extension',
       statusClass: 'status-live',
-      thumbnail: 'assets/projects/tubekit-thumb.png',
+      thumbnail: getAssetPath('/assets/projects/tubekit-thumb.png'),
       liveUrl: 'https://github.com/saurav-96/TubeKit',
       githubUrl: 'https://github.com/saurav-96/TubeKit',
       overview:
@@ -159,7 +161,7 @@ export const PROJECT_CASE_STUDIES = {
       filterGroup: 'uiux',
       projectNature: 'UI/UX Design Concept & Interactive Prototype',
       statusClass: 'status-concept',
-      thumbnail: 'assets/projects/mindful-you.svg',
+      thumbnail: getAssetPath('/assets/projects/mindful-you.svg'),
       liveUrl: '',
       githubUrl: '',
       overview:
@@ -187,7 +189,7 @@ export const PROJECT_CASE_STUDIES = {
       filterGroup: 'ai',
       projectNature: 'Personal R&D Sandbox & Workflow Scripts',
       statusClass: 'status-lab',
-      thumbnail: 'assets/projects/ai-automation-lab.svg',
+      thumbnail: getAssetPath('/assets/projects/ai-automation-lab.svg'),
       liveUrl: '',
       githubUrl: 'https://github.com/saurav-96',
       overview:
@@ -215,12 +217,12 @@ export const PROJECT_CASE_STUDIES = {
       filterGroup: 'graphic',
       projectNature: 'Visual Communication & Brand Explorations',
       statusClass: 'status-concept',
-      thumbnail: 'assets/projects/creative-design-suite.svg',
+      thumbnail: getAssetPath('/assets/projects/creative-design-suite.svg'),
       galleryAssets: [
-        { title: 'NodeLoop Brand Identity', src: 'assets/projects/brand-nodeloop.svg' },
-        { title: 'Automation Thumbnail Concept', src: 'assets/projects/thumbnail-automation.svg' },
-        { title: 'BuildNext Event Poster', src: 'assets/projects/poster-buildnext.svg' },
-        { title: 'Social Media Campaign Kit', src: 'assets/projects/social-campaign.svg' }
+        { title: 'NodeLoop Brand Identity', src: getAssetPath('/assets/projects/brand-nodeloop.svg') },
+        { title: 'Automation Thumbnail Concept', src: getAssetPath('/assets/projects/thumbnail-automation.svg') },
+        { title: 'BuildNext Event Poster', src: getAssetPath('/assets/projects/poster-buildnext.svg') },
+        { title: 'Social Media Campaign Kit', src: getAssetPath('/assets/projects/social-campaign.svg') }
       ],
       liveUrl: '',
       githubUrl: '',

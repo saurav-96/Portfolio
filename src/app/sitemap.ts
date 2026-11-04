@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 export const dynamic = 'force-static';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://owns.com.np';
+  const baseUrl = 'https://saurav-96.github.io/Portfolio';
   const lastModified = new Date();
 
   return [

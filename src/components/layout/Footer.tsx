@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUp, ArrowUpRight, MapPin, Clock, Award, ExternalLink, Sparkles } from 'lucide-react';
+import { getAssetPath } from '@/lib/assets';
 
 export default function Footer() {
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -110,7 +111,7 @@ export default function Footer() {
             <Link href="/" prefetch={true} className="inline-flex items-center gap-3 group" aria-label="Saurav Bhusal Home">
               <div className="w-11 h-11 rounded-full p-[1.5px] bg-gradient-to-tr from-cyan-400 via-purple-500 to-pink-500 shadow-[0_0_20px_rgba(168,85,247,0.35)] group-hover:scale-105 transition-transform duration-300 overflow-hidden flex items-center justify-center">
                 <Image
-                  src="/assets/images/saurav-logo.png"
+                  src={getAssetPath('/assets/images/saurav-logo.png')}
                   alt="Saurav Bhusal Avatar"
                   width={44}
                   height={44}
@@ -185,7 +186,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="/assets/documents/Saurav-Bhusal-CV.html"
+                  href={getAssetPath('/assets/documents/Saurav-Bhusal-CV.html')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-cyan-400 hover:text-cyan-300 hover:underline inline-flex items-center gap-1 text-xs pt-1"

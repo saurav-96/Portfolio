@@ -2,6 +2,7 @@
 
 import { useState, useCallback, Suspense, useEffect } from 'react';
 import Image from 'next/image';
+import { getAssetPath } from '@/lib/assets';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
@@ -142,7 +143,7 @@ export default function ContactClient() {
               <div data-hero-reveal className="glass-card p-4 sm:p-5 flex items-center gap-4" data-tilt>
                 <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-cyan-500/25 to-purple-600/30 border border-cyan-400/40 shrink-0">
                   <Image
-                    src="/assets/images/saurav-cutout.png"
+                    src={getAssetPath('/assets/images/saurav-cutout.png')}
                     alt="Saurav Bhusal"
                     fill
                     className="object-cover object-top"

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { getAssetPath } from '@/lib/assets';
 import Link from 'next/link';
 import {
   Code2,
@@ -398,7 +399,7 @@ export default function ServicesClient() {
               <div className="glass-card p-5 flex items-center gap-4" data-tilt>
                 <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-br from-cyan-500/25 to-purple-600/30 border border-cyan-400/40 shrink-0">
                   <Image
-                    src="/assets/images/saurav-cutout.png"
+                    src={getAssetPath('/assets/images/saurav-cutout.png')}
                     alt="Saurav Bhusal — Lead Web Developer"
                     fill
                     className="object-cover object-top"

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { ArrowUpRight, ArrowDown, Menu, X } from 'lucide-react';
+import { getAssetPath } from '@/lib/assets';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },
@@ -102,7 +103,7 @@ export default function Navbar() {
           >
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full p-[1.5px] bg-gradient-to-tr from-cyan-400 via-purple-500 to-pink-500 shadow-[0_0_15px_rgba(168,85,247,0.35)] group-hover:scale-105 transition-transform duration-300 overflow-hidden flex items-center justify-center">
               <Image
-                src="/assets/images/saurav-logo.png"
+                src={getAssetPath('/assets/images/saurav-logo.png')}
                 alt="Saurav Bhusal Logo"
                 width={40}
                 height={40}

@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { ExternalLink, Github, ArrowRight } from 'lucide-react';
 import { PROJECT_CASE_STUDIES, type ProjectCaseStudy } from '@/data/projectsData';
 import CaseStudyModal from '@/components/modals/CaseStudyModal';
+import { getAssetPath } from '@/lib/assets';
 
 function SearchParamsReader({
   onParams
@@ -184,7 +185,7 @@ export default function ProjectsClient() {
                 <div>
                   <div className="project-thumb-wrap mb-5">
                     <img
-                      src="/assets/projects/swasthyasutra-thumb.png"
+                      src={getAssetPath('/assets/projects/swasthyasutra-thumb.png')}
                       alt="SwasthyaSutra AI Smart Healthcare and Telemedicine Platform Showcase"
                       className="project-thumb"
                       loading="lazy"
@@ -237,7 +238,7 @@ export default function ProjectsClient() {
                 <div>
                   <div className="project-thumb-wrap mb-5">
                     <img
-                      src="/assets/projects/keyflow-thumb.png"
+                      src={getAssetPath('/assets/projects/keyflow-thumb.png')}
                       alt="KeyFlow Personal Keyboard Shortcut Manager SaaS Productivity Web App"
                       className="project-thumb"
                       loading="lazy"
@@ -290,7 +291,7 @@ export default function ProjectsClient() {
                 <div>
                   <div className="project-thumb-wrap mb-5">
                     <img
-                      src="/assets/projects/egov-thumb.png"
+                      src={getAssetPath('/assets/projects/egov-thumb.png')}
                       alt="Butwal SmartGov AI E-Government Civic Portal Showcase"
                       className="project-thumb"
                       loading="lazy"
@@ -343,7 +344,7 @@ export default function ProjectsClient() {
                 <div>
                   <div className="project-thumb-wrap mb-5">
                     <img
-                      src="/assets/projects/tubekit-thumb.png"
+                      src={getAssetPath('/assets/projects/tubekit-thumb.png')}
                       alt="YouTube Power-Tools (TubeKit) Chrome Extension MV3 In-Player Utility Suite"
                       className="project-thumb"
                       loading="lazy"
@@ -406,7 +407,7 @@ export default function ProjectsClient() {
                 <div>
                   <div className="project-thumb-wrap mb-5">
                     <img
-                      src="/assets/projects/mindful-you.svg"
+                      src={getAssetPath('/assets/projects/mindful-you.svg')}
                       alt="Mindful You Wellness Landing Page and Mobile UI/UX Concept"
                       className="project-thumb"
                       loading="lazy"
@@ -452,7 +453,7 @@ export default function ProjectsClient() {
                 <div>
                   <div className="project-thumb-wrap mb-5">
                     <img
-                      src="/assets/projects/ai-automation-lab.svg"
+                      src={getAssetPath('/assets/projects/ai-automation-lab.svg')}
                       alt="AI and Python Automation Experiments Workflow"
                       className="project-thumb"
                       loading="lazy"
@@ -550,7 +551,7 @@ export default function ProjectsClient() {
                   <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="rounded-xl overflow-hidden bg-[#07070C] border border-white/10 p-2.5 group">
                       <img
-                        src="/assets/projects/brand-nodeloop.svg"
+                        src={getAssetPath('/assets/projects/brand-nodeloop.svg')}
                         alt="NodeLoop Logo and Brand Identity Concept"
                         className="w-full h-36 object-cover rounded-lg mb-2 group-hover:scale-[1.02] transition"
                         loading="lazy"
@@ -563,7 +564,7 @@ export default function ProjectsClient() {
 
                     <div className="rounded-xl overflow-hidden bg-[#07070C] border border-white/10 p-2.5 group">
                       <img
-                        src="/assets/projects/thumbnail-automation.svg"
+                        src={getAssetPath('/assets/projects/thumbnail-automation.svg')}
                         alt="YouTube Thumbnail Design Concept"
                         className="w-full h-36 object-cover rounded-lg mb-2 group-hover:scale-[1.02] transition"
                         loading="lazy"
@@ -576,7 +577,7 @@ export default function ProjectsClient() {
 
                     <div className="rounded-xl overflow-hidden bg-[#07070C] border border-white/10 p-2.5 group">
                       <img
-                        src="/assets/projects/poster-buildnext.svg"
+                        src={getAssetPath('/assets/projects/poster-buildnext.svg')}
                         alt="BuildNext Promotional Hackathon Poster"
                         className="w-full h-36 object-cover rounded-lg mb-2 group-hover:scale-[1.02] transition"
                         loading="lazy"
@@ -589,7 +590,7 @@ export default function ProjectsClient() {
 
                     <div className="rounded-xl overflow-hidden bg-[#07070C] border border-white/10 p-2.5 group">
                       <img
-                        src="/assets/projects/social-campaign.svg"
+                        src={getAssetPath('/assets/projects/social-campaign.svg')}
                         alt="Social Media Branding Exploration"
                         className="w-full h-36 object-cover rounded-lg mb-2 group-hover:scale-[1.02] transition"
                         loading="lazy"
@@ -613,7 +614,7 @@ export default function ProjectsClient() {
             <div className="flex items-center gap-5">
               <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-cyan-500/25 to-purple-600/30 border border-cyan-400/40 shrink-0 hidden sm:block">
                 <Image
-                  src="/assets/images/saurav-cutout.png"
+                  src={getAssetPath('/assets/images/saurav-cutout.png')}
                   alt="Saurav Bhusal"
                   fill
                   className="object-cover object-top"

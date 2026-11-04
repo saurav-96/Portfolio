@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
+import { getAssetPath } from '@/lib/assets';
 import { X, ExternalLink } from 'lucide-react';
 import { useModalScrollLock } from '@/hooks/useModalScrollLock';
 
@@ -124,13 +125,13 @@ export default function TrophyModal({ cert, onClose }: TrophyModalProps) {
                 role="button"
                 tabIndex={0}
                 onClick={() => {
-                  setActiveSrc('/assets/certificates/saurav-hackathon-runnerup.jpg');
+                  setActiveSrc(getAssetPath('/assets/certificates/saurav-hackathon-runnerup.jpg'));
                   setActiveTitle('Saurav Bhusal receiving First Runner-Up Trophy & Rs. 10,000/- Check');
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    setActiveSrc('/assets/certificates/saurav-hackathon-runnerup.jpg');
+                    setActiveSrc(getAssetPath('/assets/certificates/saurav-hackathon-runnerup.jpg'));
                     setActiveTitle('Saurav Bhusal receiving First Runner-Up Trophy & Rs. 10,000/- Check');
                   }
                 }}
@@ -138,7 +139,7 @@ export default function TrophyModal({ cert, onClose }: TrophyModalProps) {
               >
                 <div className="relative w-full h-[160px] overflow-hidden">
                   <Image
-                    src="/assets/certificates/saurav-hackathon-runnerup.jpg"
+                    src={getAssetPath('/assets/certificates/saurav-hackathon-runnerup.jpg')}
                     alt="Saurav Bhusal on stage receiving the First Runner-Up Trophy and Rs. 10,000 Award Check"
                     fill
                     className="gallery-thumb-img object-cover transition-transform duration-300 group-hover:scale-105"
@@ -155,13 +156,13 @@ export default function TrophyModal({ cert, onClose }: TrophyModalProps) {
                 role="button"
                 tabIndex={0}
                 onClick={() => {
-                  setActiveSrc('/assets/certificates/hackathon-trophy.jpg');
+                  setActiveSrc(getAssetPath('/assets/certificates/hackathon-trophy.jpg'));
                   setActiveTitle('Official First Runner-Up Web Design Competition Trophy');
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    setActiveSrc('/assets/certificates/hackathon-trophy.jpg');
+                    setActiveSrc(getAssetPath('/assets/certificates/hackathon-trophy.jpg'));
                     setActiveTitle('Official First Runner-Up Web Design Competition Trophy');
                   }
                 }}
@@ -169,7 +170,7 @@ export default function TrophyModal({ cert, onClose }: TrophyModalProps) {
               >
                 <div className="relative w-full h-[160px] overflow-hidden">
                   <Image
-                    src="/assets/certificates/hackathon-trophy.jpg"
+                    src={getAssetPath('/assets/certificates/hackathon-trophy.jpg')}
                     alt="Close-up photograph of the First Runner-Up Web Design Competition Trophy"
                     fill
                     className="gallery-thumb-img object-cover transition-transform duration-300 group-hover:scale-105"

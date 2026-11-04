@@ -76,7 +76,7 @@ export default function CaseStudyModal({ project, onClose }: CaseStudyModalProps
           {project.thumbnail && (
             <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/10 bg-black/40">
               <Image
-                src={project.thumbnail.startsWith('/') ? project.thumbnail : `/${project.thumbnail}`}
+                src={project.thumbnail}
                 alt={project.title}
                 fill
                 className="object-cover"

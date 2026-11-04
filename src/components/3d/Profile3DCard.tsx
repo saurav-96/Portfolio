@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import { getAssetPath } from '@/lib/assets';
 
 export default function Profile3DCard() {
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -164,7 +165,7 @@ export default function Profile3DCard() {
           <div className="profile-card-face profile-card-front">
             <div className="profile-glare" />
             <Image
-              src="/assets/images/saurav-cutout.png"
+              src={getAssetPath('/assets/images/saurav-cutout.png')}
               alt="Portrait of Saurav Bhusal — Creative Web Developer and UI/UX Designer"
               width={400}
               height={450}
@@ -189,7 +190,7 @@ export default function Profile3DCard() {
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-full p-0.5 bg-gradient-to-r from-cyan-400 to-purple-500 flex items-center justify-center">
                   <Image
-                    src="/assets/images/saurav-logo.png"
+                    src={getAssetPath('/assets/images/saurav-logo.png')}
                     alt="Saurav Logo"
                     width={32}
                     height={32}

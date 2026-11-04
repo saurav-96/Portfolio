@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getAssetPath } from '@/lib/assets';
 import {
   FileText,
   ZoomIn,
@@ -96,7 +97,7 @@ export default function AboutClient() {
 
               <div className="flex flex-wrap items-center gap-3">
                 <a
-                  href="/assets/documents/Saurav-Bhusal-CV.html"
+                  href={getAssetPath('/assets/documents/Saurav-Bhusal-CV.html')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-primary text-sm inline-flex items-center gap-2"
@@ -461,13 +462,13 @@ export default function AboutClient() {
                   setSelectedCert({
                     title: '1st Runner-Up — Web Design Hackathon 2026',
                     meta: 'Issued by NIT LEGEND (Team of IT Experts) & Butwal Sub-Metropolitan City • Date: 16th Jestha, 2083 (May 30, 2026)',
-                    src: '/assets/certificates/nit-legend-hackathon-2026.jpg',
+                    src: getAssetPath('/assets/certificates/nit-legend-hackathon-2026.jpg'),
                     hasGallery: true, isHackathon: true,
                   })
                 }
               >
                 <Image
-                  src="/assets/certificates/nit-legend-hackathon-2026.jpg"
+                  src={getAssetPath('/assets/certificates/nit-legend-hackathon-2026.jpg')}
                   alt="NIT Legend Hackathon Trophy & Award Certificate"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -504,7 +505,7 @@ export default function AboutClient() {
                   setSelectedCert({
                     title: '1st Runner-Up — Web Design Hackathon 2026',
                     meta: 'Issued by NIT LEGEND (Team of IT Experts) & Butwal Sub-Metropolitan City • Date: 16th Jestha, 2083 (May 30, 2026)',
-                    src: '/assets/certificates/nit-legend-hackathon-2026.jpg',
+                    src: getAssetPath('/assets/certificates/nit-legend-hackathon-2026.jpg'),
                     hasGallery: true, isHackathon: true,
                   })
                 }
@@ -527,12 +528,12 @@ export default function AboutClient() {
                   setSelectedCert({
                     title: 'UX/UI Design Competition 2025 — Certificate of Participation',
                     meta: 'Organized by Sagarmatha Secondary Boarding School with Swarnim IT Club • Representing Oxford H.S.S. • Date: Nov 28, 2025',
-                    src: '/assets/certificates/sagarmatha-ux-ui-2025.jpg',
+                    src: getAssetPath('/assets/certificates/sagarmatha-ux-ui-2025.jpg'),
                   })
                 }
               >
                 <Image
-                  src="/assets/certificates/sagarmatha-ux-ui-2025.jpg"
+                  src={getAssetPath('/assets/certificates/sagarmatha-ux-ui-2025.jpg')}
                   alt="Sagarmatha Secondary Boarding School UX/UI Competition 2025"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -569,7 +570,7 @@ export default function AboutClient() {
                   setSelectedCert({
                     title: 'UX/UI Design Competition 2025 — Certificate of Participation',
                     meta: 'Organized by Sagarmatha Secondary Boarding School with Swarnim IT Club • Representing Oxford H.S.S. • Date: Nov 28, 2025',
-                    src: '/assets/certificates/sagarmatha-ux-ui-2025.jpg',
+                    src: getAssetPath('/assets/certificates/sagarmatha-ux-ui-2025.jpg'),
                   })
                 }
                 className="btn-secondary text-xs py-1.5 px-3 inline-flex items-center gap-1.5 cursor-pointer"
@@ -591,13 +592,13 @@ export default function AboutClient() {
                   setSelectedCert({
                     title: 'Harvard CS50x: Introduction to Computer Science Certificate',
                     meta: 'Harvard University • Cambridge, Massachusetts • Issued to Saurav Bhusal • Certificate ID: c95716f9-c771-4c7b-91b5-c0e45c322f56',
-                    src: '/assets/certificates/cs50x-certificate.png',
+                    src: getAssetPath('/assets/certificates/cs50x-certificate.png'),
                     verifyUrl: 'https://certificates.cs50.io/c95716f9-c771-4c7b-91b5-c0e45c322f56',
                   })
                 }
               >
                 <Image
-                  src="/assets/certificates/cs50x-certificate.png"
+                  src={getAssetPath('/assets/certificates/cs50x-certificate.png')}
                   alt="Harvard CS50x Certificate"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -651,7 +652,7 @@ export default function AboutClient() {
                     setSelectedCert({
                       title: 'Harvard CS50x: Introduction to Computer Science Certificate',
                       meta: 'Harvard University • Cambridge, Massachusetts • Issued to Saurav Bhusal • Certificate ID: c95716f9-c771-4c7b-91b5-c0e45c322f56',
-                      src: '/assets/certificates/cs50x-certificate.png',
+                      src: getAssetPath('/assets/certificates/cs50x-certificate.png'),
                       verifyUrl: 'https://certificates.cs50.io/c95716f9-c771-4c7b-91b5-c0e45c322f56',
                     })
                   }
@@ -684,14 +685,14 @@ export default function AboutClient() {
                   setSelectedCert({
                     title: 'freeCodeCamp — Legacy Responsive Web Design V8',
                     meta: 'Issued Nov 1, 2026 • ~300 Hours of Coursework • Credential ID: fcc-fb9ff4ab-867a-4946-9bc0-614b82559f76',
-                    src: '/assets/certificates/fcc-responsive-web-design-v8.png',
+                    src: getAssetPath('/assets/certificates/fcc-responsive-web-design-v8.png'),
                     verifyUrl:
                       'https://freecodecamp.org/certification/fcc-fb9ff4ab-867a-4946-9bc0-614b82559f76/responsive-web-design',
                   })
                 }
               >
                 <Image
-                  src="/assets/certificates/fcc-responsive-web-design-v8.png"
+                  src={getAssetPath('/assets/certificates/fcc-responsive-web-design-v8.png')}
                   alt="freeCodeCamp Responsive Web Design"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -745,7 +746,7 @@ export default function AboutClient() {
                     setSelectedCert({
                       title: 'freeCodeCamp — Legacy Responsive Web Design V8',
                       meta: 'Issued Nov 1, 2026 • ~300 Hours • ID: fcc-fb9ff4ab-867a-4946-9bc0-614b82559f76',
-                      src: '/assets/certificates/fcc-responsive-web-design-v8.png',
+                      src: getAssetPath('/assets/certificates/fcc-responsive-web-design-v8.png'),
                       verifyUrl:
                         'https://freecodecamp.org/certification/fcc-fb9ff4ab-867a-4946-9bc0-614b82559f76/responsive-web-design',
                     })
@@ -778,14 +779,14 @@ export default function AboutClient() {
                   setSelectedCert({
                     title: 'freeCodeCamp — JavaScript Algorithms and Data Structures (V8)',
                     meta: 'Issued Nov 2, 2026 • ~300 Hours • Credential ID: fcc-fb9ff4ab-867a-4946-9bc0-614b82559f76',
-                    src: '/assets/certificates/fcc-javascript-algorithms-v8.png',
+                    src: getAssetPath('/assets/certificates/fcc-javascript-algorithms-v8.png'),
                     verifyUrl:
                       'https://freecodecamp.org/certification/fcc-fb9ff4ab-867a-4946-9bc0-614b82559f76/javascript-algorithms-and-data-structures-v8',
                   })
                 }
               >
                 <Image
-                  src="/assets/certificates/fcc-javascript-algorithms-v8.png"
+                  src={getAssetPath('/assets/certificates/fcc-javascript-algorithms-v8.png')}
                   alt="freeCodeCamp JavaScript Algorithms V8"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -839,7 +840,7 @@ export default function AboutClient() {
                     setSelectedCert({
                       title: 'freeCodeCamp — JavaScript Algorithms and Data Structures (V8)',
                       meta: 'Issued Nov 2, 2026 • ~300 Hours • Credential ID: fcc-fb9ff4ab-867a-4946-9bc0-614b82559f76',
-                      src: '/assets/certificates/fcc-javascript-algorithms-v8.png',
+                      src: getAssetPath('/assets/certificates/fcc-javascript-algorithms-v8.png'),
                       verifyUrl:
                         'https://freecodecamp.org/certification/fcc-fb9ff4ab-867a-4946-9bc0-614b82559f76/javascript-algorithms-and-data-structures-v8',
                     })
@@ -872,14 +873,14 @@ export default function AboutClient() {
                   setSelectedCert({
                     title: 'Legacy JavaScript Algorithms and Data Structures Certification (V7)',
                     meta: 'Issued Nov 2, 2026 • ~300 Hours of Algorithmic Practice',
-                    src: '/assets/certificates/fcc-javascript-algorithms-v7.png',
+                    src: getAssetPath('/assets/certificates/fcc-javascript-algorithms-v7.png'),
                     verifyUrl:
                       'https://freecodecamp.org/certification/fcc-fb9ff4ab-867a-4946-9bc0-614b82559f76/javascript-algorithms-and-data-structures',
                   })
                 }
               >
                 <Image
-                  src="/assets/certificates/fcc-javascript-algorithms-v7.png"
+                  src={getAssetPath('/assets/certificates/fcc-javascript-algorithms-v7.png')}
                   alt="freeCodeCamp Legacy JS Algorithms V7"
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"

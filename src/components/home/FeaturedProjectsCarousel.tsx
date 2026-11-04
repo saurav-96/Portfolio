@@ -413,7 +413,7 @@ export default function FeaturedProjectsCarousel() {
               <div className="flex flex-col">
                 <div className="project-thumb-wrap mb-4 aspect-[4/3] h-[180px] w-full shrink-0">
                   <Image
-                    src={project.thumbnail.startsWith('/') ? project.thumbnail : `/${project.thumbnail}`}
+                    src={project.thumbnail}
                     alt={project.title}
                     width={640}
                     height={480}
