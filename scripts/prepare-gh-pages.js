@@ -15,6 +15,14 @@ if (!fs.existsSync(outDir)) {
 fs.writeFileSync(path.join(outDir, '.nojekyll'), '');
 console.log('  ✓ Created .nojekyll');
 
+// 1b. Ensure CNAME exists in out/ if root CNAME exists
+const rootCname = path.join(__dirname, '..', 'CNAME');
+const outCname = path.join(outDir, 'CNAME');
+if (fs.existsSync(rootCname) && !fs.existsSync(outCname)) {
+  fs.copyFileSync(rootCname, outCname);
+  console.log('  ✓ Copied CNAME to out/');
+}
+
 // 2. If basePath is set, ensure any root /assets/ paths in HTML/JS/CSS files are prefixed
 if (basePath) {
   function processFiles(dir) {
