@@ -56,7 +56,7 @@ export default function TrophyModal({ cert, onClose }: TrophyModalProps) {
       onClick={onClose}
     >
       <div
-        className="modal-panel relative w-full max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain rounded-3xl bg-midnight/95 border border-purple-500/30 p-6 sm:p-7 shadow-2xl space-y-4 touch-pan-y"
+        className="modal-panel relative w-full max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain rounded-3xl bg-midnight/95 border border-purple-500/30 p-4 sm:p-7 shadow-2xl space-y-4 touch-pan-y"
         data-lenis-prevent
         onClick={(e) => e.stopPropagation()}
       >

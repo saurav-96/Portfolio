@@ -81,11 +81,11 @@ export default function Footer() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 w-full lg:w-auto">
               <Link
                 href="/hire"
                 prefetch={true}
-                className="btn-primary text-sm px-6 py-3"
+                className="btn-primary text-sm px-6 py-3 justify-center text-center"
                 data-magnetic
               >
                 <span>Fast-Track Hire</span>
@@ -94,7 +94,7 @@ export default function Footer() {
               <button
                 type="button"
                 onClick={handleCopyEmail}
-                className="btn-secondary text-xs sm:text-sm px-4 sm:px-5 py-3 cursor-pointer"
+                className="btn-secondary text-xs sm:text-sm px-4 sm:px-5 py-3 cursor-pointer justify-center text-center"
                 data-magnetic
                 aria-label="Copy Saurav's direct email to clipboard"
               >

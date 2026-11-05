@@ -1050,6 +1050,15 @@ p {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   white-space: nowrap;
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  .status-badge {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+  }
 }
 
 .status-live {
@@ -1120,6 +1129,14 @@ p {
   background: linear-gradient(135deg, var(--accent-violet), var(--accent-purple));
   border-color: rgba(255, 255, 255, 0.28);
   box-shadow: 0 8px 24px -4px rgba(124, 58, 237, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+@media (max-width: 640px) {
+  .filter-btn {
+    padding: 0.42rem 0.9rem;
+    font-size: 0.78rem;
+    min-height: 38px;
+  }
 }
 
 /* Case Study & Certificate Lightbox Modal Overlay */
@@ -1206,6 +1223,17 @@ p {
   transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
 }
 
+@media (max-width: 640px) {
+  .form-input,
+  .form-select,
+  .form-textarea,
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 .form-select option {
   background: #0C0D17;
   color: var(--text-primary);
@@ -1285,7 +1313,7 @@ p {
   padding: 0.75rem 0.25rem 1.75rem 0.25rem;
   cursor: grab;
   user-select: none;
-  touch-action: pan-y pinch-zoom;
+  touch-action: pan-x pan-y;
 }
 
 .projects-carousel-track:not(.is-animating):not(.is-dragging) {
@@ -2349,19 +2377,16 @@ body.cursor-active .ambient-cursor-spotlight {
 }
 
 .mobile-nav-drawer {
-  position: fixed;
-  top: 5.2rem;
-  left: 1rem;
-  right: 1rem;
-  z-index: 99;
-  background: rgba(12, 13, 23, 0.96);
+  position: relative;
+  z-index: 101;
+  background: rgba(10, 11, 24, 0.96);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--border-glass-strong);
   border-radius: 1.35rem;
   padding: 1.25rem;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
-  transform: translateY(-14px) scale(0.98);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(168, 85, 247, 0.15);
+  transform: translateY(-8px) scale(0.98);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.25s ease;
@@ -2395,8 +2420,8 @@ body.cursor-active .ambient-cursor-spotlight {
   }
 }
 
-/* Mobile & Small Tablet (<= 768px) */
-@media (max-width: 768px) {
+/* Mobile & Tablet (<= 1023px) */
+@media (max-width: 1023px) {
   .nav-links,
   .nav-cta-desktop {
     display: none !important;
@@ -2451,10 +2476,16 @@ body.cursor-active .ambient-cursor-spotlight {
 
 /* Small Mobile Phones (<= 480px) */
 @media (max-width: 480px) {
-  .btn-primary,
-  .btn-secondary {
+  .hero-actions .btn-primary,
+  .hero-actions .btn-secondary,
+  .cta-actions .btn-primary,
+  .cta-actions .btn-secondary {
     width: 100%;
     justify-content: center;
+  }
+
+  .navbar-glass .btn-primary {
+    width: auto !important;
   }
 
   /* Ergonomic mobile spacing & word breaking */

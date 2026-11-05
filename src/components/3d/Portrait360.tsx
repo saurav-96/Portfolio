@@ -423,7 +423,7 @@ export default function Portrait360() {
     <div
       ref={containerRef}
       id="hero-portrait-360"
-      className="portrait-turntable-360 select-none cursor-grab active:cursor-grabbing relative flex flex-col items-center justify-center w-full max-w-[535px]"
+      className="portrait-turntable-360 select-none cursor-grab active:cursor-grabbing relative flex flex-col items-center justify-center w-full max-w-[535px] touch-pan-y"
       role="region"
       aria-label="Interactive 3D rotating portrait of Saurav Bhusal. Drag horizontally to rotate; release to gently spring back to original pose."
       onPointerDown={handlePointerDown}
@@ -469,9 +469,9 @@ export default function Portrait360() {
               <path d="M2 12h20" />
             </svg>
           </span>
-          <span className="font-semibold text-white text-[12px] tracking-tight">3D Interactive</span>
-          <span className="text-slate-500">•</span>
-          <span className="text-slate-300 text-[11px] font-medium">Drag to Rotate</span>
+          <span className="font-semibold text-white text-[11px] sm:text-[12px] tracking-tight whitespace-nowrap">3D Interactive</span>
+          <span className="text-slate-500 hidden sm:inline">•</span>
+          <span className="text-slate-300 text-[11px] font-medium hidden sm:inline whitespace-nowrap">Drag to Rotate</span>
         </div>
 
         <div className="flex items-center gap-1.5 pl-2.5 border-l border-white/10">

@@ -38,7 +38,7 @@ export default function CaseStudyModal({ project, onClose }: CaseStudyModalProps
       onClick={onClose}
     >
       <div
-        className="modal-panel relative w-full max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain rounded-3xl bg-midnight/95 border border-purple-500/30 p-6 sm:p-8 shadow-2xl space-y-6 touch-pan-y"
+        className="modal-panel relative w-full max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain rounded-3xl bg-midnight/95 border border-purple-500/30 p-4 sm:p-8 shadow-2xl space-y-6 touch-pan-y"
         data-lenis-prevent
         onClick={(e) => e.stopPropagation()}
       >
@@ -47,27 +47,27 @@ export default function CaseStudyModal({ project, onClose }: CaseStudyModalProps
           id="case-study-modal-close"
           type="button"
           onClick={onClose}
-          className="sticky top-0 float-right z-30 p-2 rounded-full bg-white/10 hover:bg-purple-600/40 text-slate-300 hover:text-white transition-colors border border-white/10 cursor-pointer shadow-lg"
+          className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 z-30 p-2 sm:p-2.5 rounded-full bg-white/10 hover:bg-purple-600/40 text-slate-300 hover:text-white transition-colors border border-white/10 cursor-pointer shadow-lg w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center shrink-0"
           aria-label="Close project modal"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
         {/* Content Body */}
-        <div id="case-study-modal-body" className="space-y-6">
+        <div id="case-study-modal-body" className="space-y-6 pt-1">
           {/* Header */}
-          <div className="space-y-3">
+          <div className="space-y-3 pr-10 sm:pr-12">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-xs px-3 py-1 rounded-full bg-purple-950/70 border border-purple-500/40 text-purple-300 font-semibold">
+              <span className="font-mono text-xs px-3 py-1 rounded-full bg-purple-950/70 border border-purple-500/40 text-purple-300 font-semibold shrink-0">
                 {project.number}
               </span>
-              <span className="font-mono text-xs px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/40 text-cyan-300">
+              <span className="font-mono text-xs px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 shrink-0">
                 {project.category}
               </span>
-              <span className={`status-badge ${project.statusClass}`}>{project.projectNature}</span>
+              <span className={`status-badge ${project.statusClass} whitespace-normal text-left`}>{project.projectNature}</span>
             </div>
 
-            <h2 id="modal-project-title" className="font-heading text-2xl sm:text-4xl font-bold text-white">
+            <h2 id="modal-project-title" className="font-heading text-xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
               {project.title}
             </h2>
           </div>
@@ -139,13 +139,13 @@ export default function CaseStudyModal({ project, onClose }: CaseStudyModalProps
           )}
 
           {/* Action Links */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
             {project.liveUrl && (
               <a
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary text-xs sm:text-sm py-2.5 px-5 inline-flex items-center gap-2 rounded-xl font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:shadow-violet"
+                className="btn-primary text-xs sm:text-sm py-2.5 px-5 inline-flex items-center justify-center gap-2 rounded-xl font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:shadow-violet w-full sm:w-auto text-center"
               >
                 <ExternalLink className="w-4 h-4" />
                 <span>Live Demonstration</span>
@@ -156,7 +156,7 @@ export default function CaseStudyModal({ project, onClose }: CaseStudyModalProps
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary text-xs sm:text-sm py-2.5 px-5 inline-flex items-center gap-2 rounded-xl font-medium text-slate-200 bg-white/5 hover:bg-white/10 border border-white/10 hover:text-white"
+                className="btn-secondary text-xs sm:text-sm py-2.5 px-5 inline-flex items-center justify-center gap-2 rounded-xl font-medium text-slate-200 bg-white/5 hover:bg-white/10 border border-white/10 hover:text-white w-full sm:w-auto text-center"
               >
                 <Github className="w-4 h-4" />
                 <span>View Source Code</span>

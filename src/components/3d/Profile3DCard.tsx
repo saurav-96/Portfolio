@@ -145,7 +145,7 @@ export default function Profile3DCard() {
       </div>
 
       <div
-        className={`profile-3d-scene ${isDragging ? 'is-dragging' : ''} cursor-grab active:cursor-grabbing select-none`}
+        className={`profile-3d-scene ${isDragging ? 'is-dragging' : ''} cursor-grab active:cursor-grabbing select-none touch-pan-y`}
         role="region"
         aria-label="Interactive 3D portrait. Click and drag to rotate; release to gently spring back to original pose."
         onPointerDown={handlePointerDown}

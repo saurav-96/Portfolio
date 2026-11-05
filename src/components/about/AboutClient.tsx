@@ -325,7 +325,7 @@ export default function AboutClient() {
             <p className="text-sm text-slate-300 mb-5 font-body">
               Strong algorithmic problem-solving foundations honed through Harvard's CS50x and practical scripting experiments.
             </p>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
               <div
                 role="button"
                 tabIndex={0}

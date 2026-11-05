@@ -47,7 +47,7 @@ export default function ServiceDetailModal({ service, onClose }: ServiceDetailMo
       onClick={onClose}
     >
       <div
-        className="modal-panel relative w-full max-w-3xl max-h-[88vh] overflow-y-auto overscroll-contain rounded-3xl bg-midnight/95 border border-purple-500/30 p-6 sm:p-8 shadow-2xl space-y-6"
+        className="modal-panel relative w-full max-w-3xl max-h-[88vh] overflow-y-auto overscroll-contain rounded-3xl bg-midnight/95 border border-purple-500/30 p-4 sm:p-8 shadow-2xl space-y-6"
         onClick={(e) => e.stopPropagation()}
         data-lenis-prevent
       >
@@ -56,22 +56,22 @@ export default function ServiceDetailModal({ service, onClose }: ServiceDetailMo
           id="service-modal-close"
           type="button"
           onClick={onClose}
-          className="sticky top-0 float-right z-30 p-2 rounded-full bg-white/10 hover:bg-purple-600/40 text-slate-300 hover:text-white transition-colors border border-white/10 cursor-pointer shadow-lg"
+          className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 z-30 p-2 sm:p-2.5 rounded-full bg-white/10 hover:bg-purple-600/40 text-slate-300 hover:text-white transition-colors border border-white/10 cursor-pointer shadow-lg w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center shrink-0"
           aria-label="Close service modal"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
         {/* Content Body */}
-        <div id="service-modal-body" className="space-y-6">
+        <div id="service-modal-body" className="space-y-6 pt-1">
           {/* Header */}
-          <div className="space-y-2">
+          <div className="space-y-2 pr-10 sm:pr-12">
             <div className="flex items-center gap-2">
               <span className="font-mono text-xs px-3 py-1 rounded-full bg-purple-950/70 border border-purple-500/40 text-purple-300">
                 {service.badge}
               </span>
             </div>
-            <h2 id="service-modal-title" className="font-heading text-2xl sm:text-4xl font-bold text-white">
+            <h2 id="service-modal-title" className="font-heading text-xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
               {service.title}
             </h2>
             <p className="text-sm text-slate-300 leading-relaxed pt-1 font-body">{service.description}</p>
