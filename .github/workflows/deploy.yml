@@ -36,7 +36,8 @@ jobs:
 
       - name: Build and Export with Next.js
         env:
-          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path || '/Portfolio' }}
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          NEXT_PUBLIC_SITE_URL: https://www.saurav-bhusal.com.np
         run: npm run build
 
       - name: Upload Pages Artifact

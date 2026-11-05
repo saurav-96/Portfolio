@@ -6,7 +6,7 @@ export const SITE_CONFIG = {
   title: 'Saurav Bhusal — 3D Interactive Developer & UI/UX Design Portfolio',
   description:
     'High-craft 3D interactive developer and UI/UX design portfolio of Saurav Bhusal. Featuring WebGL Three.js experiences, modern React/Next.js engineering, GSAP animations, and human-centered design.',
-  url: 'https://saurav-96.github.io/Portfolio',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.saurav-bhusal.com.np',
   ogImage: getAssetPath('/assets/images/saurav-portrait.jpg'),
   author: 'Saurav Bhusal',
   location: 'Kapilvastu & Butwal, Nepal',
@@ -100,7 +100,7 @@ export function generatePersonJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: 'Saurav Bhusal',
-    url: 'https://saurav-96.github.io/Portfolio',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.saurav-bhusal.com.np',
     image: 'https://owns.com.np/assets/images/saurav-portrait.jpg',
     jobTitle: 'Software & Web Developer, UI/UX Designer',
     address: {
@@ -141,7 +141,7 @@ export function generateWebSiteJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Saurav Bhusal Portfolio',
-    url: 'https://saurav-96.github.io/Portfolio',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.saurav-bhusal.com.np',
     author: {
       '@type': 'Person',
       name: 'Saurav Bhusal',
