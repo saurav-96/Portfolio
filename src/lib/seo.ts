@@ -7,7 +7,7 @@ export const SITE_CONFIG = {
   description:
     'High-craft 3D interactive developer and UI/UX design portfolio of Saurav Bhusal. Featuring WebGL Three.js experiences, modern React/Next.js engineering, GSAP animations, and human-centered design.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.saurav-bhusal.com.np',
-  ogImage: getAssetPath('/assets/images/saurav-portrait.jpg'),
+  ogImage: getAssetPath('/assets/images/hero-social-thumbnail.jpg'),
   author: 'Saurav Bhusal',
   location: 'Kapilvastu & Butwal, Nepal',
   email: 'sauravbhusal369@gmail.com',
@@ -101,7 +101,7 @@ export function generatePersonJsonLd() {
     '@type': 'Person',
     name: 'Saurav Bhusal',
     url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.saurav-bhusal.com.np',
-    image: 'https://owns.com.np/assets/images/saurav-portrait.jpg',
+    image: 'https://www.saurav-bhusal.com.np/assets/images/hero-social-thumbnail.jpg',
     jobTitle: 'Software & Web Developer, UI/UX Designer',
     address: {
       '@type': 'PostalAddress',

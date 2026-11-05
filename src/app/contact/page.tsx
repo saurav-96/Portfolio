@@ -7,7 +7,7 @@ export const metadata: Metadata = generatePageMetadata({
   description:
     'Get in touch with Saurav Bhusal, Software & Web Developer and UI/UX Designer from Nepal. Send a message, discuss project inquiries, or connect directly via WhatsApp, Email, and social channels.',
   path: '/contact',
-  image: '/assets/images/saurav-portrait.jpg',
+  image: '/assets/images/hero-social-thumbnail.jpg',
   keywords: [
     'Contact Saurav Bhusal',
     'Web Developer Nepal Contact',

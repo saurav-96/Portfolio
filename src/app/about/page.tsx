@@ -7,7 +7,7 @@ export const metadata: Metadata = generatePageMetadata({
   description:
     'Learn about Saurav Bhusal, a Computer Science student and Creative Web Developer from Nepal. Harvard CS50x verified alum, Hackathon 2026 winner, specializing in React, Next.js, Three.js, and Figma.',
   path: '/about',
-  image: '/assets/images/saurav-portrait.jpg',
+  image: '/assets/images/hero-social-thumbnail.jpg',
   keywords: [
     'About Saurav Bhusal',
     'Saurav Bhusal Bio',

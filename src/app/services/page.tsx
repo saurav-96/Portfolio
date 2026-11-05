@@ -7,7 +7,7 @@ export const metadata: Metadata = generatePageMetadata({
   description:
     'Hire Saurav Bhusal for responsive Web Development, Figma UI/UX Design, Python AI Automation, and Graphic Design. Explore services and collaborative workflow.',
   path: '/services',
-  image: '/assets/images/saurav-portrait.jpg',
+  image: '/assets/images/hero-social-thumbnail.jpg',
   keywords: [
     'Hire Saurav Bhusal',
     'Freelance Web Developer',

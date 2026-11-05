@@ -7,7 +7,7 @@ export const metadata: Metadata = generatePageMetadata({
   description:
     'Hire Saurav Bhusal for frontend web development, interactive 3D WebGL experiences, and UI/UX design. Direct WhatsApp chat, Upwork escrow contracts, Fiverr gigs, and fast-track project onboarding.',
   path: '/hire',
-  image: '/assets/images/saurav-portrait.jpg',
+  image: '/assets/images/hero-social-thumbnail.jpg',
   keywords: [
     'Hire Saurav Bhusal',
     'Hire Web Developer Nepal',
